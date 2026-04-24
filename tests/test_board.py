@@ -9,3 +9,9 @@ def test_board_starts_with_white_turn():
     board = Board()
 
     assert board.turn == board.WHITE
+
+def test_board_pieces_constants():
+    assert Board.WHITE_PAWN == 1
+    assert Board.BLACK_BISHOP == -3
+    assert Board.WHITE_KING == 6
+    assert Board.BLACK_QUEEN == -5
