@@ -1,4 +1,7 @@
 from src.board import Board
+from rich.console import Console
+
+console = Console(highlight=False)
 
 PIECE_SYMBOLS = {
     Board.WHITE_KING: '♔',
@@ -15,13 +18,19 @@ PIECE_SYMBOLS = {
     Board.BLACK_KNIGHT: '♞',
     Board.BLACK_PAWN: '♟',
 
-    Board.EMPTY: '·'
+    Board.EMPTY: ' '
 }
 
 def draw_board(board: Board):
-    
-    for i in range(7, -1, -1):
-        row = f"{i+1}|"
-        row = row + " ".join(PIECE_SYMBOLS[square] for square in board.squares[16*i : 16*(i+1)-8])
-        print(row)
-    print("  a b c d e f g h")
+    for row in range(7, -1, -1):
+        row_str = f"[bold]{row+1}[/bold] "
+        for column in range(8):
+            piece = board.squares[16 * row + column]
+            piece_color = "#FFFFFF" if piece > 0 else "#282828"
+            square_color = "#C5C5C5" if (row + column) % 2 else "#769656"
+
+            row_str = row_str + f"[{piece_color} on {square_color}]{PIECE_SYMBOLS[-abs(piece)]} [/{piece_color} on {square_color}]"
+
+        console.print(row_str)
+
+    console.print("  [bold]a b c d e f g h[/bold]")
