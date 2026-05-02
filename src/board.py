@@ -56,3 +56,49 @@ class Board:
         self.squares[117] = self.BLACK_BISHOP
         self.squares[118] = self.BLACK_KNIGHT
         self.squares[119] = self.BLACK_ROOK
+
+    
+    def load_FEN(self, fen: str):
+
+        # Clear board
+        self.squares = [0] * 128
+
+        fen_split = fen.split(" ")
+        
+        board_position = fen_split[0]
+        player_turn = fen_split[1]
+
+        # Set player turn
+        self.turn = self.WHITE if player_turn == 'w' else self.BLACK
+
+        all_rows = board_position.split('/')
+
+        fen_pieces = {
+            'P': Board.WHITE_PAWN,
+            'N': Board.WHITE_KNIGHT,
+            'B': Board.WHITE_BISHOP,
+            'R': Board.WHITE_ROOK,
+            'Q': Board.WHITE_QUEEN,
+            'K': Board.WHITE_KING,
+            'p': Board.BLACK_PAWN,
+            'n': Board.BLACK_KNIGHT,
+            'b': Board.BLACK_BISHOP,
+            'r': Board.BLACK_ROOK,
+            'q': Board.BLACK_QUEEN,
+            'k': Board.BLACK_KING
+        }
+
+        # Load pieces
+
+        row = 7
+        for row_str in all_rows:
+            column = 0
+            for sign in row_str:
+                if sign.isdigit():
+                    column += int(sign)
+                else:
+                    square = 16 * row + column
+                    piece = fen_pieces[sign]
+                    self.squares[square] = piece
+                    column += 1
+            row -= 1
