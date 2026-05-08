@@ -14,10 +14,15 @@ class MoveGenerator:
 
             piece = self.board.squares[square]
 
-            if piece == Board.WHITE_PAWN:
-                self.generate_white_pawn_moves(square, piece, moves)
-            elif piece == Board.BLACK_PAWN:
-                self.generate_black_pawn_moves(square, piece, moves)
+            # Generate moves for white if there is their turn
+            if self.board.turn == Board.WHITE:
+                if piece == Board.WHITE_PAWN:
+                    self.generate_white_pawn_moves(square, piece, moves)
+            
+            # Generate moves for black if there is their turn
+            elif self.board.turn == Board.BLACK:
+                if piece == Board.BLACK_PAWN:
+                    self.generate_black_pawn_moves(square, piece, moves)
         
         return moves
     
