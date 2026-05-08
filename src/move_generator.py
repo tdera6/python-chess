@@ -25,6 +25,26 @@ class MoveGenerator:
                     self.generate_black_pawn_moves(square, piece, moves)
         
         return moves
+
+    # Chec if piece is the same color as the moving piece
+    def is_friendly(self, piece: int) -> bool:
+        turn = self.board.turn
+
+        if piece == Board.EMPTY:
+            return False
+        
+        return  (turn == Board.WHITE and piece > 0) or\
+                (turn == Board.BLACK and piece < 0)
+    
+    # Check if piece is opposite color from the moving piece
+    def is_enemy(self, piece: int) -> bool:
+        turn = self.board.turn
+
+        if piece == Board.EMPTY:
+            return False
+        
+        return  (turn == Board.WHITE and piece < 0) or\
+                (turn == Board.BLACK and piece > 0)
     
     def generate_white_pawn_moves(self, square: int, piece: int, moves: list[Move]):
         one_square_ahead = square + 16
