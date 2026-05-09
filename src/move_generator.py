@@ -61,6 +61,16 @@ class MoveGenerator:
             and self.board.squares[two_squares_ahead] == Board.EMPTY:
                 moves.append(Move(from_square=square, to_square=two_squares_ahead, piece_moved=piece))
 
+        # Capturing
+        left_capture = square + 15
+        right_capture = square + 17
+
+        if not (left_capture & 0x88) and self.is_enemy(self.board.squares[left_capture]):
+            moves.append(Move(from_square=square, to_square=left_capture, piece_moved=piece, piece_captured=self.board.squares[left_capture]))
+
+        if not (right_capture & 0x88) and self.is_enemy(self.board.squares[right_capture]):
+            moves.append(Move(from_square=square, to_square=right_capture, piece_moved=piece, piece_captured=self.board.squares[right_capture]))
+
     def generate_black_pawn_moves(self, square: int, piece: int, moves: list[Move]):
         one_square_ahead = square - 16
         two_squares_ahead = square - 32
@@ -75,4 +85,14 @@ class MoveGenerator:
             if self.board.squares[one_square_ahead] == Board.EMPTY\
             and self.board.squares[two_squares_ahead] == Board.EMPTY:
                 moves.append(Move(from_square=square, to_square=two_squares_ahead, piece_moved=piece))
+
+        # Capturing
+        left_capture = square - 15
+        right_capture = square - 17
+
+        if not (left_capture & 0x88) and self.is_enemy(self.board.squares[left_capture]):
+            moves.append(Move(from_square=square, to_square=left_capture, piece_moved=piece, piece_captured=self.board.squares[left_capture]))
+
+        if not (right_capture & 0x88) and self.is_enemy(self.board.squares[right_capture]):
+            moves.append(Move(from_square=square, to_square=right_capture, piece_moved=piece, piece_captured=self.board.squares[right_capture]))
     
