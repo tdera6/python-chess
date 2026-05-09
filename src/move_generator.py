@@ -18,11 +18,15 @@ class MoveGenerator:
             if self.board.turn == Board.WHITE:
                 if piece == Board.WHITE_PAWN:
                     self.generate_white_pawn_moves(square, piece, moves)
+                elif piece == Board.WHITE_KNIGHT:
+                    self.generate_knight_moves(square, piece, moves)
             
             # Generate moves for black if there is their turn
             elif self.board.turn == Board.BLACK:
                 if piece == Board.BLACK_PAWN:
                     self.generate_black_pawn_moves(square, piece, moves)
+                elif piece == Board.BLACK_KNIGHT:
+                    self.generate_knight_moves(square, piece, moves)
         
         return moves
 
@@ -96,3 +100,16 @@ class MoveGenerator:
         if not (right_capture & 0x88) and self.is_enemy(self.board.squares[right_capture]):
             moves.append(Move(from_square=square, to_square=right_capture, piece_moved=piece, piece_captured=self.board.squares[right_capture]))
     
+    def generate_knight_moves(self, square: int, piece: int, moves: list[Move]):
+        directions = {33, 18, -14, -31, -33, -18, 14, 31}
+
+        for direction in directions:
+            target_square = square + direction
+            
+            if not (target_square & 0x88):
+                target_piece = self.board.squares[target_square]
+                
+                if target_piece == Board.EMPTY:
+                    moves.append(Move(from_square=square, to_square=target_square, piece_moved=piece))
+                elif self.is_enemy(target_piece):
+                    moves.append(Move(from_square=square, to_square=target_square, piece_moved=piece, piece_captured=target_piece))
