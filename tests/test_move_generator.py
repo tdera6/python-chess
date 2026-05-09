@@ -2,18 +2,24 @@ import pytest
 from src.board import Board
 from src.move_generator import MoveGenerator
 
-@pytest.mark.parametrize("test_input, expected_number_of_moves", [
-    ("8/6pp/8/2p5/2P5/8/PP1Pp3/8 w - - 0 0", 6),
-    ("8/6pp/8/2p5/2P5/8/PP1Pp3/8 b - - 0 0", 5),
-    ("8/8/8/8/8/p1p1p1p1/P1P1P1P1/8 w - - 0 0", 0),
-    ("8/8/8/8/8/p1p1p1p1/P1P1P1P1/8 b - - 0 0", 0),
+@pytest.mark.parametrize("test_input, target_square, expected_number_of_moves", [
+    ("8/8/8/8/8/8/3P4/8 w - - 0 0", 0x13, 2),
+    ("8/3p4/8/8/8/8/8/8 b - - 0 0", 0x63, 2),
+    ("8/8/8/8/8/4p3/4P3/8 w - - 0 0", 0x14, 0),
+    ("8/8/8/8/8/4p3/4P3/8 b - - 0 0", 0x24, 0),
 ])
-def test_generator_contains_all_basic_pawns_movements_without_capturing(test_input, expected_number_of_moves):
+def test_single_pawn_movement_without_capturing(test_input: str, target_square: int, expected_number_of_moves: int):
     board = Board()
     board.load_FEN(test_input)
     generator = MoveGenerator(board)
+    moves = []
 
-    assert len(generator.generate_moves()) == expected_number_of_moves
+    if board.turn == Board.WHITE:
+        generator.generate_white_pawn_moves(target_square, Board.WHITE_PAWN, moves)
+    elif board.turn == Board.BLACK:
+        generator.generate_black_pawn_moves(target_square, Board.BLACK_PAWN, moves)
+    
+    assert len(moves) == expected_number_of_moves
 
 @pytest.mark.parametrize("test_input, expected_number_of_moves", [
     ("8/8/8/8/8/2p1p3/3P4/8 w - - 0 0", 4),
@@ -25,9 +31,17 @@ def test_generator_contains_all_basic_pawns_movements_without_capturing(test_inp
     ("8/6p1/2p1p3/3P4/2P5/1P6/6PP/8 w - - 0 0", 9),
     ("8/6p1/2p1p3/3P4/2P5/1P6/6PP/8 b - - 0 0", 6),
 ])
-def test_generator_contains_all_basic_pawns_movements_without_en_passant(test_input, expected_number_of_moves):
+def test_multiple_pawns_integration_without_en_passant(test_input, expected_number_of_moves):
     board = Board()
     board.load_FEN(test_input)
     generator = MoveGenerator(board)
 
-    assert len(generator.generate_moves()) == expected_number_of_moves
+    moves = generator.generate_moves()
+
+    if board.turn == Board.WHITE:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_PAWN]
+    elif board.turn == Board.BLACK:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_PAWN]
+
+
+    assert len(pawns_moves) == expected_number_of_moves
