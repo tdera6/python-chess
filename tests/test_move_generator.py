@@ -45,3 +45,30 @@ def test_multiple_pawns_integration_without_en_passant(test_input, expected_numb
 
 
     assert len(pawns_moves) == expected_number_of_moves
+
+@pytest.mark.parametrize("test_input, expected_number_of_moves", [
+    ("8/8/8/8/8/2N5/8/8 w - - 0 0", 8),
+    ("8/8/8/8/8/8/8/N7 w - - 0 0", 2),
+    ("8/8/8/8/8/8/8/1N6 w - - 0 0", 3),
+    ("8/8/8/8/8/2n5/8/8 b - - 0 0", 8),
+    ("8/8/8/8/8/8/8/n7 b - - 0 0", 2),
+    ("8/8/8/8/8/8/8/1n6 b - - 0 0", 3),
+    ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 0", 4),
+    ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b - - 0 0", 4),
+    ("8/8/8/8/2p1p3/1p3p2/3N4/8 w - - 0 0", 6),
+    ("8/8/8/8/2P1p3/1P3P2/3n4/8 b - - 0 0", 5),
+])
+def test_knights_movement(test_input, expected_number_of_moves):
+    board = Board()
+    board.load_FEN(test_input)
+    generator = MoveGenerator(board)
+
+    moves = generator.generate_moves()
+
+    if board.turn == Board.WHITE:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_KNIGHT]
+    elif board.turn == Board.BLACK:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_KNIGHT]
+
+
+    assert len(pawns_moves) == expected_number_of_moves
