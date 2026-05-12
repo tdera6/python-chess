@@ -113,3 +113,25 @@ class MoveGenerator:
                     moves.append(Move(from_square=square, to_square=target_square, piece_moved=piece))
                 elif self.is_enemy(target_piece):
                     moves.append(Move(from_square=square, to_square=target_square, piece_moved=piece, piece_captured=target_piece))
+    
+    # Helper function to generate Queen, Bishop and Rook moves
+    def sliding_pieces(self, square: int , piece: int, directions: list[int], moves: list[Move]):
+
+        from_square = square
+
+        for direction in directions:
+            to_square = from_square
+            while True:
+                if to_square & 0x88:
+                    break
+                
+                to_square += direction
+                
+                piece_on_to_square = self.board.squares[to_square]
+                if piece_on_to_square == Board.EMPTY:
+                    moves.append(Move(from_square, to_square, piece))
+                elif self.is_enemy(piece_on_to_square):
+                    moves.append(Move(from_square, to_square, piece, piece_captured=piece_on_to_square))
+                    break
+                elif self.is_friendly(piece_on_to_square):
+                    break
