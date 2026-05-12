@@ -20,6 +20,8 @@ class MoveGenerator:
                     self.generate_white_pawn_moves(square, piece, moves)
                 elif piece == Board.WHITE_KNIGHT:
                     self.generate_knight_moves(square, piece, moves)
+                elif piece == Board.WHITE_BISHOP:
+                    self.generate_bishop_moves(square, piece, moves)
             
             # Generate moves for black if there is their turn
             elif self.board.turn == Board.BLACK:
@@ -27,6 +29,8 @@ class MoveGenerator:
                     self.generate_black_pawn_moves(square, piece, moves)
                 elif piece == Board.BLACK_KNIGHT:
                     self.generate_knight_moves(square, piece, moves)
+                elif piece == Board.BLACK_BISHOP:
+                    self.generate_bishop_moves(square, piece, moves)
         
         return moves
 
@@ -122,10 +126,10 @@ class MoveGenerator:
         for direction in directions:
             to_square = from_square
             while True:
+                to_square += direction
+
                 if to_square & 0x88:
                     break
-                
-                to_square += direction
                 
                 piece_on_to_square = self.board.squares[to_square]
                 if piece_on_to_square == Board.EMPTY:
@@ -135,3 +139,7 @@ class MoveGenerator:
                     break
                 elif self.is_friendly(piece_on_to_square):
                     break
+
+    def generate_bishop_moves(self, square: int, piece: int, moves: list[Move]):
+        directions = [15, 17, -15, -17]
+        self.sliding_pieces(square, piece, directions, moves)

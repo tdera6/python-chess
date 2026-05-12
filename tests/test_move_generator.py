@@ -72,3 +72,34 @@ def test_knights_movement(test_input, expected_number_of_moves):
 
 
     assert len(pawns_moves) == expected_number_of_moves
+
+@pytest.mark.parametrize("test_input, expected_number_of_moves", [
+    ("B7/8/8/8/8/8/8/8 w - - 0 0", 7),
+    ("1B6/8/8/8/8/8/8/8 w - - 0 0", 7),
+    ("8/8/8/8/4B3/8/8/8 w - - 0 0", 13),
+    ("8/8/8/3P1P2/4B3/8/8/8 w - - 0 0", 6),
+    ("8/8/8/3P1P2/4B3/8/2p5/8 w - - 0 0", 5),
+    ("8/8/8/2P5/1B6/2p5/8/8 w - - 0 0", 3),
+    ("8/8/8/8/8/8/1P6/B7 w - - 0 0", 0),
+    ("b7/8/8/8/8/8/8/8 b - - 0 0", 7),
+    ("1b6/8/8/8/8/8/8/8 b - - 0 0", 7),
+    ("8/8/8/8/4b3/8/8/8 b - - 0 0", 13),
+    ("8/8/8/3p1p2/4b3/8/8/8 b - - 0 0", 6),
+    ("8/8/8/3p1p2/4b3/8/2P5/8 b - - 0 0", 5),
+    ("8/8/8/2p5/1b6/2P5/8/8 b - - 0 0", 3),
+    ("8/8/8/8/8/8/1p6/b7 b - - 0 0", 0),
+])
+def test_bishop_movement(test_input, expected_number_of_moves):
+    board = Board()
+    board.load_FEN(test_input)
+    generator = MoveGenerator(board)
+
+    moves = generator.generate_moves()
+
+    if board.turn == Board.WHITE:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_BISHOP]
+    elif board.turn == Board.BLACK:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_BISHOP]
+
+
+    assert len(pawns_moves) == expected_number_of_moves
