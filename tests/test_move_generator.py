@@ -103,3 +103,28 @@ def test_bishop_movement(test_input, expected_number_of_moves):
 
 
     assert len(pawns_moves) == expected_number_of_moves
+
+@pytest.mark.parametrize("test_input, expected_number_of_moves", [
+    ("R7/8/8/8/8/8/8/8 w - - 0 0", 14),
+    ("8/8/1R6/8/8/8/8/8 w - - 0 0", 14),
+    ("8/8/4P3/4RP2/8/8/8/8 w - - 0 0", 8),
+    ("8/8/4p3/4Rp2/8/8/8/8 w - - 0 0", 10),
+    ("8/8/8/8/8/5r2/8/8 b - - 0 0", 14),
+    ("8/8/8/8/8/8/8/r7 b - - 0 0", 14),
+    ("8/8/8/P7/rP6/P7/8/8 b - - 0 0", 3),
+    ("8/8/8/p7/rp6/p7/8/8 b - - 0 0", 0),
+])
+def test_rook_movement(test_input, expected_number_of_moves):
+    board = Board()
+    board.load_FEN(test_input)
+    generator = MoveGenerator(board)
+
+    moves = generator.generate_moves()
+
+    if board.turn == Board.WHITE:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_ROOK]
+    elif board.turn == Board.BLACK:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_ROOK]
+
+
+    assert len(pawns_moves) == expected_number_of_moves
