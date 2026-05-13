@@ -66,12 +66,12 @@ def test_knights_movement(test_input, expected_number_of_moves):
     moves = generator.generate_moves()
 
     if board.turn == Board.WHITE:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_KNIGHT]
+        knight_moves = [move for move in moves if move.piece_moved == Board.WHITE_KNIGHT]
     elif board.turn == Board.BLACK:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_KNIGHT]
+        knight_moves = [move for move in moves if move.piece_moved == Board.BLACK_KNIGHT]
 
 
-    assert len(pawns_moves) == expected_number_of_moves
+    assert len(knight_moves) == expected_number_of_moves
 
 @pytest.mark.parametrize("test_input, expected_number_of_moves", [
     ("B7/8/8/8/8/8/8/8 w - - 0 0", 7),
@@ -97,12 +97,12 @@ def test_bishop_movement(test_input, expected_number_of_moves):
     moves = generator.generate_moves()
 
     if board.turn == Board.WHITE:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_BISHOP]
+        bishop_moves = [move for move in moves if move.piece_moved == Board.WHITE_BISHOP]
     elif board.turn == Board.BLACK:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_BISHOP]
+        bishop_moves = [move for move in moves if move.piece_moved == Board.BLACK_BISHOP]
 
 
-    assert len(pawns_moves) == expected_number_of_moves
+    assert len(bishop_moves) == expected_number_of_moves
 
 @pytest.mark.parametrize("test_input, expected_number_of_moves", [
     ("R7/8/8/8/8/8/8/8 w - - 0 0", 14),
@@ -122,12 +122,12 @@ def test_rook_movement(test_input, expected_number_of_moves):
     moves = generator.generate_moves()
 
     if board.turn == Board.WHITE:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_ROOK]
+        rook_moves = [move for move in moves if move.piece_moved == Board.WHITE_ROOK]
     elif board.turn == Board.BLACK:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_ROOK]
+        rook_moves = [move for move in moves if move.piece_moved == Board.BLACK_ROOK]
 
 
-    assert len(pawns_moves) == expected_number_of_moves
+    assert len(rook_moves) == expected_number_of_moves
 
 @pytest.mark.parametrize("test_input, expected_number_of_moves", [
     ("8/8/8/8/1Q6/8/8/8 w - - 0 0", 23),
@@ -144,12 +144,12 @@ def test_queen_movement(test_input, expected_number_of_moves):
     moves = generator.generate_moves()
 
     if board.turn == Board.WHITE:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_QUEEN]
+        queen_moves = [move for move in moves if move.piece_moved == Board.WHITE_QUEEN]
     elif board.turn == Board.BLACK:
-        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_QUEEN]
+        queen_moves = [move for move in moves if move.piece_moved == Board.BLACK_QUEEN]
 
 
-    assert len(pawns_moves) == expected_number_of_moves
+    assert len(queen_moves) == expected_number_of_moves
 
 @pytest.mark.parametrize("test_input, expected_number_of_moves", [
     ("8/8/8/8/8/2K5/8/8 w - - 0 0", 8),
