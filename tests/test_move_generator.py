@@ -128,3 +128,25 @@ def test_rook_movement(test_input, expected_number_of_moves):
 
 
     assert len(pawns_moves) == expected_number_of_moves
+
+@pytest.mark.parametrize("test_input, expected_number_of_moves", [
+    ("8/8/8/8/1Q6/8/8/8 w - - 0 0", 23),
+    ("8/8/3p4/1P6/1Q1p4/8/3p4/8 w - - 0 0", 12),
+    ("Q7/PP6/8/8/8/8/8/8 w - - 0 0", 7),
+    ("8/8/3ppp2/3pqp2/3ppp2/8/8/8 b - - 0 0", 0),
+    ("8/2PpP3/2pQp3/2PpP3/8/8/8/8 w - - 0 0", 4),
+])
+def test_queen_movement(test_input, expected_number_of_moves):
+    board = Board()
+    board.load_FEN(test_input)
+    generator = MoveGenerator(board)
+
+    moves = generator.generate_moves()
+
+    if board.turn == Board.WHITE:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.WHITE_QUEEN]
+    elif board.turn == Board.BLACK:
+        pawns_moves = [move for move in moves if move.piece_moved == Board.BLACK_QUEEN]
+
+
+    assert len(pawns_moves) == expected_number_of_moves

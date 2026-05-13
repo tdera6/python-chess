@@ -24,6 +24,9 @@ class MoveGenerator:
                     self.generate_bishop_moves(square, piece, moves)
                 elif piece == Board.WHITE_ROOK:
                     self.generate_rook_moves(square, piece, moves)
+                elif piece == Board.WHITE_QUEEN:
+                    self.generate_queen_moves(square, piece, moves)
+
             
             # Generate moves for black if there is their turn
             elif self.board.turn == Board.BLACK:
@@ -35,6 +38,8 @@ class MoveGenerator:
                     self.generate_bishop_moves(square, piece, moves)
                 elif piece == Board.BLACK_ROOK:
                     self.generate_rook_moves(square, piece, moves)
+                elif piece == Board.BLACK_QUEEN:
+                    self.generate_queen_moves(square, piece, moves)
         
         return moves
 
@@ -150,4 +155,8 @@ class MoveGenerator:
 
     def generate_rook_moves(self, square: int, piece: int, moves: list[Move]):
         directions = [1, -1, 16, -16]
+        self.sliding_pieces(square, piece, directions, moves)
+
+    def generate_queen_moves(self, square: int, piece: int, moves: list[Move]):
+        directions = [15, 17, -15, -17, 1, -1, 16, -16]
         self.sliding_pieces(square, piece, directions, moves)
