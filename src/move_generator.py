@@ -26,6 +26,8 @@ class MoveGenerator:
                     self.generate_rook_moves(square, piece, moves)
                 elif piece == Board.WHITE_QUEEN:
                     self.generate_queen_moves(square, piece, moves)
+                elif piece == Board.WHITE_KING:
+                    self.generate_king_moves(square, piece, moves)
 
             
             # Generate moves for black if there is their turn
@@ -40,6 +42,8 @@ class MoveGenerator:
                     self.generate_rook_moves(square, piece, moves)
                 elif piece == Board.BLACK_QUEEN:
                     self.generate_queen_moves(square, piece, moves)
+                elif piece == Board.BLACK_KING:
+                    self.generate_king_moves(square, piece, moves)
         
         return moves
 
@@ -160,3 +164,21 @@ class MoveGenerator:
     def generate_queen_moves(self, square: int, piece: int, moves: list[Move]):
         directions = [15, 17, -15, -17, 1, -1, 16, -16]
         self.sliding_pieces(square, piece, directions, moves)
+
+    def generate_king_moves(self, square: int, piece: int, moves: list[Move]):
+        directions = [1, -17, -16, -15, -1, 15, 16, 17]
+
+        for direction in directions:
+            to_square = square + direction
+            
+            if to_square & 0x88:
+                continue
+
+            piece_on_to_square = self.board.squares[to_square]
+
+            if piece_on_to_square == Board.EMPTY:
+                moves.append(Move(from_square=square, to_square=to_square, piece_moved=piece))
+            elif self.is_enemy(piece_on_to_square):
+                moves.append(Move(from_square=square, to_square=to_square, piece_moved=piece, piece_captured=piece_on_to_square))
+            elif self.is_friendly(piece_on_to_square):
+                continue
