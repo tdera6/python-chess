@@ -112,3 +112,11 @@ class Board:
 
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
+
+    
+    def undo_move(self, move: Move):
+        self.squares[move.from_square] = move.piece_moved
+        self.squares[move.to_square] = move.piece_captured
+
+        # Switch turn
+        self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
