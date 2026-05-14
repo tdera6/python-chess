@@ -1,5 +1,7 @@
+from src.move import Move
+
 class Board:
-    
+       
     # Colors
     WHITE = 1
     BLACK = -1
@@ -102,3 +104,11 @@ class Board:
                     self.squares[square] = piece
                     column += 1
             row -= 1
+
+
+    def make_move(self, move: Move):
+        self.squares[move.from_square] = Board.EMPTY
+        self.squares[move.to_square] = move.piece_moved
+
+        # Switch turn
+        self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
