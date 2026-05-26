@@ -182,3 +182,23 @@ class MoveGenerator:
                 moves.append(Move(from_square=square, to_square=to_square, piece_moved=piece, piece_captured=piece_on_to_square))
             elif self.is_friendly(piece_on_to_square):
                 continue
+
+    def generate_legal_moves(self) -> list[Move]:        
+        moves = self.generate_moves()
+        legal_moves = []
+
+        for move in moves:
+            self.board.make_move(move)
+            new_moves = self.generate_moves()
+
+            # Find king position (possibly new one)
+            king_position = self.board.squares.index(Board.WHITE_KING if self.board.turn == Board.BLACK else Board.BLACK_KING)
+
+            king_capture_threats = [move for move in new_moves if move.to_square == king_position]
+
+            if len(king_capture_threats) == 0:
+                legal_moves.append(move)
+
+            self.board.undo_move(move)
+
+        return legal_moves
