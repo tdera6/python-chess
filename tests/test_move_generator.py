@@ -171,3 +171,18 @@ def test_king_movement(test_input, expected_number_of_moves):
         king_moves = [move for move in moves if move.piece_moved == Board.BLACK_KING]
 
     assert len(king_moves) == expected_number_of_moves
+
+@pytest.mark.parametrize("test_input, expected_number_of_moves", [
+    ("1k2R3/ppp5/8/8/8/8/P7/K7 b - - 0 0", 0),
+    ("r1bqkbnr/p1pp1Qpp/1pn5/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b - - 0 0", 0),
+    ("2k5/8/8/8/8/8/PPP5/1K2r2R w - - 0 0", 1),
+    ("7k/8/8/8/8/6Qq/8/6RK w - - 0 0", 2),
+])
+def test_only_legal_moves_are_generated_without_special_moves(test_input: str, expected_number_of_moves: int):
+    board = Board()
+    board.load_FEN(test_input)
+    generator = MoveGenerator(board)
+
+    moves = generator.generate_legal_moves()
+
+    assert len(moves) == expected_number_of_moves
