@@ -186,3 +186,18 @@ def test_only_legal_moves_are_generated_without_special_moves(test_input: str, e
     moves = generator.generate_legal_moves()
 
     assert len(moves) == expected_number_of_moves
+
+@pytest.mark.parametrize("test_input, expected_number_of_moves", [
+    ("8/3P4/8/8/8/8/8/8 w - - 0 0", 4),
+    ("2q5/3P4/8/8/8/8/8/8 w - - 0 0", 8),
+    ("8/8/8/8/8/8/2p5/8 b - - 0 0", 4),
+    ("8/8/8/8/8/8/p7/1B6 b - - 0 0", 8),
+])
+def test_pawn_promotion_generates_correct_amount_of_moves(test_input: str, expected_number_of_moves: int):
+    board = Board()
+    board.load_FEN(test_input)
+    generator = MoveGenerator(board)
+
+    moves = generator.generate_moves()
+
+    assert len(moves) == expected_number_of_moves
