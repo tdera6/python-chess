@@ -6,6 +6,8 @@ class Move:
     to_square: int
     piece_moved: int
     piece_captured: int = 0
+    is_promotion: bool = False
+    promotion_to: int = 0
 
     def __str__(self):
         columns = "abcdefgh"
@@ -14,4 +16,7 @@ class Move:
 
         ending_row = self.to_square // 16
         ending_column = (self.to_square - ending_row * 16)
-        return f"{columns[starting_column]}{starting_row + 1}-{columns[ending_column]}{ending_row + 1}"
+
+        promotion_str = "" if self.is_promotion == False else f" -> {self.promotion_to}" 
+
+        return f"{columns[starting_column]}{starting_row + 1}-{columns[ending_column]}{ending_row + 1}{promotion_str}"
