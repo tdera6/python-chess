@@ -108,7 +108,11 @@ class Board:
 
     def make_move(self, move: Move):
         self.squares[move.from_square] = Board.EMPTY
-        self.squares[move.to_square] = move.piece_moved
+
+        if move.is_promotion:
+            self.squares[move.to_square] = move.promotion_to
+        else:
+            self.squares[move.to_square] = move.piece_moved
 
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
