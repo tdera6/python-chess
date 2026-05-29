@@ -92,3 +92,32 @@ def test_undo_move_swaps_back_player_turn():
     board.undo_move(Move(52, 67, Board.WHITE_PAWN, Board.BLACK_PAWN))
 
     assert board.turn == Board.WHITE
+
+
+@pytest.mark.parametrize("fen, move", [
+    ("3k4/7P/8/8/8/8/8/3K4 w - - 0 0", Move(0x67, 0x77, Board.WHITE_PAWN, is_promotion=True, promotion_to=Board.WHITE_QUEEN)),
+    ("3k2r1/7P/8/8/8/8/8/3K4 w - - 0 0", Move(0x67, 0x76, Board.WHITE_PAWN, Board.BLACK_ROOK, is_promotion=True, promotion_to=Board.WHITE_BISHOP)),
+    ("3k4/8/8/8/8/8/7p/3K2R1 b - - 0 0", Move(0x17, 0x07, Board.BLACK_PAWN, is_promotion=True, promotion_to=Board.BLACK_BISHOP)),
+    ("3k4/8/8/8/8/8/7p/3K2R1 b - - 0 0", Move(0x17, 0x06, Board.BLACK_PAWN, Board.WHITE_ROOK, is_promotion=True, promotion_to=Board.BLACK_QUEEN)),    
+])
+def test_make_move_updates_piece_position_after_promotion(fen: str, move: Move):
+    board = Board()
+    board.load_FEN(fen)
+    board.make_move(move)
+
+    assert board.squares[move.to_square] == move.promotion_to
+    assert board.squares[move.from_square] == Board.EMPTY
+
+@pytest.mark.parametrize("fen, move", [
+    ("3k3Q/8/8/8/8/8/8/3K4 w - - 0 0", Move(0x67, 0x77, Board.WHITE_PAWN, is_promotion=True, promotion_to=Board.WHITE_QUEEN)),
+    ("3k2B1/8/8/8/8/8/8/3K4 w - - 0 0", Move(0x67, 0x76, Board.WHITE_PAWN, Board.BLACK_ROOK, is_promotion=True, promotion_to=Board.WHITE_BISHOP)),
+    ("3k4/8/8/8/8/8/8/3K2Rb b - - 0 0", Move(0x17, 0x07, Board.BLACK_PAWN, is_promotion=True, promotion_to=Board.BLACK_BISHOP)),
+    ("3k4/8/8/8/8/8/8/3K2q1 b - - 0 0", Move(0x17, 0x06, Board.BLACK_PAWN, Board.WHITE_ROOK, is_promotion=True, promotion_to=Board.BLACK_QUEEN)),    
+])
+def test_undo_move_updates_piece_position_to_state_before_promotion(fen: str, move: Move):
+    board = Board()
+    board.load_FEN(fen)
+    board.undo_move(move)
+
+    assert board.squares[move.to_square] == move.piece_captured
+    assert board.squares[move.from_square] == move.piece_moved

@@ -73,7 +73,12 @@ class MoveGenerator:
 
         # Basic one square move
         if not (one_square_ahead & 0x88) and self.board.squares[one_square_ahead] == Board.EMPTY:
-            moves.append(Move(from_square=square, to_square=one_square_ahead, piece_moved=piece))
+
+            # Check if pawn is promoting
+            if square // 16 == 6:
+                self.pawn_promotion(square, one_square_ahead, moves)
+            else:
+                moves.append(Move(from_square=square, to_square=one_square_ahead, piece_moved=piece))
 
         # Check if pawn is in second row
         if square // 16 == 1:
@@ -87,10 +92,18 @@ class MoveGenerator:
         right_capture = square + 17
 
         if not (left_capture & 0x88) and self.is_enemy(self.board.squares[left_capture]):
-            moves.append(Move(from_square=square, to_square=left_capture, piece_moved=piece, piece_captured=self.board.squares[left_capture]))
+            # Check if pawn is promoting
+            if square // 16 == 6:
+                self.pawn_promotion(square, left_capture, moves)
+            else:
+                moves.append(Move(from_square=square, to_square=left_capture, piece_moved=piece, piece_captured=self.board.squares[left_capture]))
 
         if not (right_capture & 0x88) and self.is_enemy(self.board.squares[right_capture]):
-            moves.append(Move(from_square=square, to_square=right_capture, piece_moved=piece, piece_captured=self.board.squares[right_capture]))
+            # Check if pawn is promoting
+            if square // 16 == 6:
+                self.pawn_promotion(square, right_capture, moves)
+            else:
+                moves.append(Move(from_square=square, to_square=right_capture, piece_moved=piece, piece_captured=self.board.squares[right_capture]))
 
     def generate_black_pawn_moves(self, square: int, piece: int, moves: list[Move]):
         one_square_ahead = square - 16
@@ -98,7 +111,11 @@ class MoveGenerator:
 
         # Basic one square move
         if not (one_square_ahead & 0x88) and self.board.squares[one_square_ahead] == Board.EMPTY:
-            moves.append(Move(from_square=square, to_square=one_square_ahead, piece_moved=piece))
+            # Check if pawn is promoting
+            if square // 16 == 1:
+                self.pawn_promotion(square, one_square_ahead, moves)
+            else:
+                moves.append(Move(from_square=square, to_square=one_square_ahead, piece_moved=piece))
 
         # Check if pawn is in seventh row
         if square // 16 == 6:
@@ -112,10 +129,18 @@ class MoveGenerator:
         right_capture = square - 17
 
         if not (left_capture & 0x88) and self.is_enemy(self.board.squares[left_capture]):
-            moves.append(Move(from_square=square, to_square=left_capture, piece_moved=piece, piece_captured=self.board.squares[left_capture]))
+            # Check if pawn is promoting
+            if square // 16 == 1:
+                self.pawn_promotion(square, left_capture, moves)
+            else:
+                moves.append(Move(from_square=square, to_square=left_capture, piece_moved=piece, piece_captured=self.board.squares[left_capture]))
 
         if not (right_capture & 0x88) and self.is_enemy(self.board.squares[right_capture]):
-            moves.append(Move(from_square=square, to_square=right_capture, piece_moved=piece, piece_captured=self.board.squares[right_capture]))
+            # Check if pawn is promoting
+            if square // 16 == 1:
+                self.pawn_promotion(square, right_capture, moves)
+            else:
+                moves.append(Move(from_square=square, to_square=right_capture, piece_moved=piece, piece_captured=self.board.squares[right_capture]))
     
     def generate_knight_moves(self, square: int, piece: int, moves: list[Move]):
         directions = {33, 18, -14, -31, -33, -18, 14, 31}
@@ -202,3 +227,16 @@ class MoveGenerator:
             self.board.undo_move(move)
 
         return legal_moves
+    
+    def pawn_promotion(self, from_square: int, to_square: int, moves: list[Move]):
+        pieces_to_promote_into = [Board.KNIGHT, Board.BISHOP, Board.ROOK, Board.QUEEN]
+        
+        color = self.board.turn
+        piece_captured = self.board.squares[to_square]
+
+        for piece in pieces_to_promote_into:
+            piece_moved = Board.PAWN * color
+            
+            move = Move(from_square=from_square, to_square=to_square, piece_moved=piece_moved, piece_captured=piece_captured, is_promotion=True, promotion_to=piece * color)
+
+            moves.append(move)
