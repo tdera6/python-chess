@@ -30,9 +30,12 @@ class Board:
 
     def __init__(self):
         self.squares = [self.EMPTY] * 128
-
         self.turn = self.WHITE
         self.en_passant_square = None
+        self.can_white_short_castle = True
+        self.can_white_long_castle = True
+        self.can_black_short_castle = True
+        self.can_black_long_castle = True
 
     def setup_starting_position(self):
         # Set up the initial position of pieces on the board
