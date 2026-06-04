@@ -1,7 +1,7 @@
 from src.move import Move
 
+
 class Board:
-       
     # Colors
     WHITE = 1
     BLACK = -1
@@ -32,7 +32,8 @@ class Board:
         self.squares = [self.EMPTY] * 128
 
         self.turn = self.WHITE
-    
+        self.en_passant_square = None
+
     def setup_starting_position(self):
         # Set up the initial position of pieces on the board
         self.squares[0] = self.WHITE_ROOK
@@ -59,35 +60,41 @@ class Board:
         self.squares[118] = self.BLACK_KNIGHT
         self.squares[119] = self.BLACK_ROOK
 
-    
     def load_FEN(self, fen: str):
 
         # Clear board
         self.squares = [0] * 128
 
         fen_split = fen.split(" ")
-        
+
         board_position = fen_split[0]
         player_turn = fen_split[1]
+        en_passant_square = fen_split[3]
+
+        columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
+        if en_passant_square != "-":
+            self.en_passant_square = (
+                int(en_passant_square[1]) - 1
+            ) * 16 + columns.index(en_passant_square[0])
 
         # Set player turn
-        self.turn = self.WHITE if player_turn == 'w' else self.BLACK
+        self.turn = self.WHITE if player_turn == "w" else self.BLACK
 
-        all_rows = board_position.split('/')
+        all_rows = board_position.split("/")
 
         fen_pieces = {
-            'P': Board.WHITE_PAWN,
-            'N': Board.WHITE_KNIGHT,
-            'B': Board.WHITE_BISHOP,
-            'R': Board.WHITE_ROOK,
-            'Q': Board.WHITE_QUEEN,
-            'K': Board.WHITE_KING,
-            'p': Board.BLACK_PAWN,
-            'n': Board.BLACK_KNIGHT,
-            'b': Board.BLACK_BISHOP,
-            'r': Board.BLACK_ROOK,
-            'q': Board.BLACK_QUEEN,
-            'k': Board.BLACK_KING
+            "P": Board.WHITE_PAWN,
+            "N": Board.WHITE_KNIGHT,
+            "B": Board.WHITE_BISHOP,
+            "R": Board.WHITE_ROOK,
+            "Q": Board.WHITE_QUEEN,
+            "K": Board.WHITE_KING,
+            "p": Board.BLACK_PAWN,
+            "n": Board.BLACK_KNIGHT,
+            "b": Board.BLACK_BISHOP,
+            "r": Board.BLACK_ROOK,
+            "q": Board.BLACK_QUEEN,
+            "k": Board.BLACK_KING,
         }
 
         # Load pieces
@@ -105,22 +112,42 @@ class Board:
                     column += 1
             row -= 1
 
-
     def make_move(self, move: Move):
         self.squares[move.from_square] = Board.EMPTY
 
         if move.is_promotion:
             self.squares[move.to_square] = move.promotion_to
+        elif move.is_en_passant:
+            self.squares[move.to_square] = move.piece_moved
+
+            # Correctly handle en passant for white and black
+            direction = 1 if self.turn == Board.WHITE else -1
+            self.squares[move.to_square - 16 * direction] = Board.EMPTY
         else:
             self.squares[move.to_square] = move.piece_moved
+
+        # Handle en passant square change
+        if move.is_double_pawn_move:
+            direction = 1 if self.turn == Board.WHITE else -1
+            self.en_passant_square = move.to_square - 16 * direction
+        else:
+            self.en_passant_square = None
 
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
 
-    
     def undo_move(self, move: Move):
         self.squares[move.from_square] = move.piece_moved
-        self.squares[move.to_square] = move.piece_captured
+
+        if move.is_en_passant:
+            direction = 1 if self.turn == Board.WHITE else -1
+            self.squares[move.to_square + direction * 16] = move.piece_captured
+            self.squares[move.to_square] = Board.EMPTY
+        else:
+            self.squares[move.to_square] = move.piece_captured
+
+        # Handle en passant square
+        self.en_passant_square = move.previous_en_passant_square
 
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
