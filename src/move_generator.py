@@ -7,7 +7,7 @@ class MoveGenerator:
         self.board = board
 
     def generate_moves(self) -> list[Move]:
-        moves = []
+        moves: list[Move] = []
 
         for square in range(128):
             if square & 0x88:
@@ -44,6 +44,9 @@ class MoveGenerator:
                     self.generate_queen_moves(square, piece, moves)
                 elif piece == Board.BLACK_KING:
                     self.generate_king_moves(square, piece, moves)
+
+        for m in moves:
+            m.previous_en_passant_square = self.board.en_passant_square
 
         return moves
 
@@ -102,12 +105,37 @@ class MoveGenerator:
                         from_square=square,
                         to_square=two_squares_ahead,
                         piece_moved=piece,
+                        is_double_pawn_move=True,
                     )
                 )
 
         # Capturing
         left_capture = square + 15
         right_capture = square + 17
+
+        en_passant_square = self.board.en_passant_square
+
+        if en_passant_square == left_capture:
+            moves.append(
+                Move(
+                    from_square=square,
+                    to_square=left_capture,
+                    piece_moved=piece,
+                    piece_captured=piece * (-1),
+                    is_en_passant=True,
+                )
+            )
+
+        if en_passant_square == right_capture:
+            moves.append(
+                Move(
+                    from_square=square,
+                    to_square=right_capture,
+                    piece_moved=piece,
+                    piece_captured=piece * (-1),
+                    is_en_passant=True,
+                )
+            )
 
         if not (left_capture & 0x88) and self.is_enemy(
             self.board.squares[left_capture]
@@ -174,12 +202,37 @@ class MoveGenerator:
                         from_square=square,
                         to_square=two_squares_ahead,
                         piece_moved=piece,
+                        is_double_pawn_move=True,
                     )
                 )
 
         # Capturing
         left_capture = square - 15
         right_capture = square - 17
+
+        en_passant_square = self.board.en_passant_square
+
+        if en_passant_square == left_capture:
+            moves.append(
+                Move(
+                    from_square=square,
+                    to_square=left_capture,
+                    piece_moved=piece,
+                    piece_captured=piece * (-1),
+                    is_en_passant=True,
+                )
+            )
+
+        if en_passant_square == right_capture:
+            moves.append(
+                Move(
+                    from_square=square,
+                    to_square=right_capture,
+                    piece_moved=piece,
+                    piece_captured=piece * (-1),
+                    is_en_passant=True,
+                )
+            )
 
         if not (left_capture & 0x88) and self.is_enemy(
             self.board.squares[left_capture]
