@@ -232,3 +232,18 @@ def test_undo_move_updates_piece_position_to_state_before_promotion(
 
     assert board.squares[move.to_square] == move.piece_captured
     assert board.squares[move.from_square] == move.piece_moved
+
+
+@pytest.mark.parametrize(
+    "fen, square",
+    [
+        ("4k3/8/8/8/3pP3/3P4/8/4K3 b - e3 0 0", 0x24),
+        ("4k3/8/8/8/2PpP3/3P4/8/4K3 b - c3 0 0", 0x22),
+        ("4k3/8/8/8/2PpPpP1/3P4/8/4K3 b - g3 0 0", 0x26),
+    ],
+)
+def test_load_FEN_correctly_updates_en_passant_possible_square(fen: str, square: int):
+    board = Board()
+    board.load_FEN(fen)
+
+    assert board.en_passant_square == square
