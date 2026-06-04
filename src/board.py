@@ -32,6 +32,7 @@ class Board:
         self.squares = [self.EMPTY] * 128
 
         self.turn = self.WHITE
+        self.en_passant_square = None
 
     def setup_starting_position(self):
         # Set up the initial position of pieces on the board
@@ -68,6 +69,13 @@ class Board:
 
         board_position = fen_split[0]
         player_turn = fen_split[1]
+        en_passant_square = fen_split[3]
+
+        columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
+        if en_passant_square != "-":
+            self.en_passant_square = (
+                int(en_passant_square[1]) - 1
+            ) * 16 + columns.index(en_passant_square[0])
 
         # Set player turn
         self.turn = self.WHITE if player_turn == "w" else self.BLACK
@@ -109,15 +117,37 @@ class Board:
 
         if move.is_promotion:
             self.squares[move.to_square] = move.promotion_to
+        elif move.is_en_passant:
+            self.squares[move.to_square] = move.piece_moved
+
+            # Correctly handle en passant for white and black
+            direction = 1 if self.turn == Board.WHITE else -1
+            self.squares[move.to_square - 16 * direction] = Board.EMPTY
         else:
             self.squares[move.to_square] = move.piece_moved
+
+        # Handle en passant square change
+        if move.is_double_pawn_move:
+            direction = 1 if self.turn == Board.WHITE else -1
+            self.en_passant_square = move.to_square - 16 * direction
+        else:
+            self.en_passant_square = None
 
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
 
     def undo_move(self, move: Move):
         self.squares[move.from_square] = move.piece_moved
-        self.squares[move.to_square] = move.piece_captured
+
+        if move.is_en_passant:
+            direction = 1 if self.turn == Board.WHITE else -1
+            self.squares[move.to_square + direction * 16] = move.piece_captured
+            self.squares[move.to_square] = Board.EMPTY
+        else:
+            self.squares[move.to_square] = move.piece_captured
+
+        # Handle en passant square
+        self.en_passant_square = move.previous_en_passant_square
 
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
