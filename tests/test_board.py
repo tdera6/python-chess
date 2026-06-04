@@ -321,3 +321,29 @@ def test_make_move_correctly_updates_pieces_position_after_en_passant(
     assert board.squares[from_square] == Board.EMPTY
     assert board.squares[to_square] == move.piece_moved
     assert board.squares[captured_pawn_square] == Board.EMPTY
+
+
+@pytest.mark.parametrize(
+    "fen, move, en_passant_square",
+    [
+        (
+            "4k3/8/8/8/3p4/8/4P3/4K3 w - - 0 0",
+            Move(0x14, 0x34, Board.WHITE_PAWN, is_double_pawn_move=True),
+            0x24,
+        ),
+        (
+            "4k3/4p3/8/3P4/8/8/8/3K4 b - - 0 0",
+            Move(0x64, 0x44, Board.BLACK_PAWN, is_double_pawn_move=True),
+            0x54,
+        ),
+    ],
+)
+def test_make_move_correctly_updates_possible_en_passant_square(
+    fen: str, move: Move, en_passant_square: int
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    board.make_move(move)
+
+    assert board.en_passant_square == en_passant_square
