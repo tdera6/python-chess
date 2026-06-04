@@ -247,3 +247,77 @@ def test_load_FEN_correctly_updates_en_passant_possible_square(fen: str, square:
     board.load_FEN(fen)
 
     assert board.en_passant_square == square
+
+
+@pytest.mark.parametrize(
+    "fen, move, from_square, to_square, captured_pawn_square",
+    [
+        (
+            "4k3/8/8/8/2PpPpP1/3P4/8/4K3 b - e3 0 0",
+            Move(
+                0x33,
+                0x24,
+                Board.BLACK_PAWN,
+                Board.WHITE_PAWN,
+                is_en_passant=True,
+                previous_en_passant_square=0x24,
+            ),
+            0x33,
+            0x24,
+            0x34,
+        ),
+        (
+            "4k3/8/8/8/2PpPpP1/3P4/8/4K3 b - c3 0 0",
+            Move(
+                0x33,
+                0x22,
+                Board.BLACK_PAWN,
+                Board.WHITE_PAWN,
+                is_en_passant=True,
+                previous_en_passant_square=0x22,
+            ),
+            0x33,
+            0x22,
+            0x32,
+        ),
+        (
+            "4k3/8/8/8/2PpPpP1/3P4/8/4K3 b - g3 0 0",
+            Move(
+                0x35,
+                0x26,
+                Board.BLACK_PAWN,
+                Board.WHITE_PAWN,
+                is_en_passant=True,
+                previous_en_passant_square=0x26,
+            ),
+            0x35,
+            0x26,
+            0x36,
+        ),
+        (
+            "4k3/8/3p4/2pPpPp1/8/8/8/4K3 w - c6 0 0",
+            Move(
+                0x43,
+                0x52,
+                Board.WHITE_PAWN,
+                Board.BLACK_PAWN,
+                is_en_passant=True,
+                previous_en_passant_square=0x52,
+            ),
+            0x43,
+            0x52,
+            0x42,
+        ),
+    ],
+)
+def test_make_move_correctly_updates_pieces_position_after_en_passant(
+    fen: str, move: Move, from_square: int, to_square: int, captured_pawn_square: int
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    board.make_move(move)
+
+    assert board.squares[from_square] == Board.EMPTY
+    assert board.squares[to_square] == move.piece_moved
+    assert board.squares[captured_pawn_square] == Board.EMPTY
