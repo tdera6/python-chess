@@ -482,3 +482,91 @@ def test_load_FEN_correctly_setup_castling_rights(
     assert board.can_white_long_castle == can_white_long_castle
     assert board.can_black_short_castle == can_black_short_castle
     assert board.can_black_long_castle == can_black_long_castle
+
+
+@pytest.mark.parametrize(
+    "fen, move, can_white_short_castle, can_white_long_castle, can_black_short_castle, can_black_long_castle",
+    [
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0",
+            Move(0x04, 0x14, Board.WHITE_KING),
+            False,
+            False,
+            True,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0",
+            Move(0x00, 0x40, Board.WHITE_ROOK),
+            True,
+            False,
+            True,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0",
+            Move(0x07, 0x47, Board.WHITE_ROOK),
+            False,
+            True,
+            True,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0",
+            Move(0x74, 0x64, Board.BLACK_KING),
+            True,
+            True,
+            False,
+            False,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0",
+            Move(0x77, 0x47, Board.BLACK_ROOK),
+            True,
+            True,
+            False,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0",
+            Move(0x70, 0x60, Board.BLACK_ROOK),
+            True,
+            True,
+            True,
+            False,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/6B1/R3K2R w KQkq - 0 0",
+            Move(0x16, 0x70, Board.WHITE_BISHOP, Board.BLACK_ROOK),
+            True,
+            True,
+            True,
+            False,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/1b6/R3K2R b KQkq - 0 0",
+            Move(0x11, 0x00, Board.BLACK_BISHOP, Board.WHITE_ROOK),
+            True,
+            False,
+            True,
+            True,
+        ),
+    ],
+)
+def test_make_move_withdraw_castling_rights(
+    fen: str,
+    move: Move,
+    can_white_short_castle: bool,
+    can_white_long_castle: bool,
+    can_black_short_castle: bool,
+    can_black_long_castle: bool,
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    board.make_move(move)
+
+    assert board.can_white_short_castle == can_white_short_castle
+    assert board.can_white_long_castle == can_white_long_castle
+    assert board.can_black_short_castle == can_black_short_castle
+    assert board.can_black_long_castle == can_black_long_castle

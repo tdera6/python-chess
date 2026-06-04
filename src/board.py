@@ -140,6 +140,33 @@ class Board:
         else:
             self.squares[move.to_square] = move.piece_moved
 
+        # Handle withdrawal of castling rights
+        if abs(move.piece_moved) == Board.KING:
+            if self.turn == Board.WHITE:
+                self.can_white_short_castle = False
+                self.can_white_long_castle = False
+            else:
+                self.can_black_short_castle = False
+                self.can_black_long_castle = False
+
+        if move.piece_moved == Board.WHITE_ROOK and move.from_square == 0x00:
+            self.can_white_long_castle = False
+        elif move.piece_moved == Board.WHITE_ROOK and move.from_square == 0x07:
+            self.can_white_short_castle = False
+        elif move.piece_moved == Board.BLACK_ROOK and move.from_square == 0x70:
+            self.can_black_long_castle = False
+        elif move.piece_moved == Board.BLACK_ROOK and move.from_square == 0x77:
+            self.can_black_short_castle = False
+
+        if move.piece_captured == Board.WHITE_ROOK and move.to_square == 0x00:
+            self.can_white_long_castle = False
+        elif move.piece_captured == Board.WHITE_ROOK and move.to_square == 0x07:
+            self.can_white_short_castle = False
+        elif move.piece_captured == Board.BLACK_ROOK and move.to_square == 0x70:
+            self.can_black_long_castle = False
+        elif move.piece_captured == Board.BLACK_ROOK and move.to_square == 0x77:
+            self.can_black_short_castle = False
+
         # Handle en passant square change
         if move.is_double_pawn_move:
             direction = 1 if self.turn == Board.WHITE else -1
@@ -159,6 +186,12 @@ class Board:
             self.squares[move.to_square] = Board.EMPTY
         else:
             self.squares[move.to_square] = move.piece_captured
+
+        # Handle castling rights
+        self.can_white_short_castle = move.previous_white_short_castle
+        self.can_white_long_castle = move.previous_white_long_castle
+        self.can_black_short_castle = move.previous_black_short_castle
+        self.can_black_long_castle = move.previous_black_long_castle
 
         # Handle en passant square
         self.en_passant_square = move.previous_en_passant_square
