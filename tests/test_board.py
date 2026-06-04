@@ -393,3 +393,43 @@ def test_undo_move_correctly_updates_pieces_position_after_en_passant(
     assert board.squares[from_square] == move.piece_moved
     assert board.squares[to_square] == Board.EMPTY
     assert board.squares[captured_pawn_square] == move.piece_captured
+
+
+@pytest.mark.parametrize(
+    "fen, move, en_passant_square",
+    [
+        (
+            "3k4/8/8/8/8/3p4/8/3K4 w - - 0 0",
+            Move(
+                0x34,
+                0x23,
+                Board.BLACK_PAWN,
+                Board.WHITE_PAWN,
+                is_en_passant=True,
+                previous_en_passant_square=0x23,
+            ),
+            0x23,
+        ),
+        (
+            "rnbqkbnr/ppp1p1pp/5P2/3p4/8/8/PPPP1PPP/RNBQKBNR b - - 0 0",
+            Move(
+                0x44,
+                0x55,
+                Board.WHITE_PAWN,
+                Board.BLACK_PAWN,
+                is_en_passant=True,
+                previous_en_passant_square=0x55,
+            ),
+            0x55,
+        ),
+    ],
+)
+def test_undo_move_correctly_brings_back_possible_en_passant_square(
+    fen: str, move: Move, en_passant_square: int
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    board.undo_move(move)
+
+    assert board.en_passant_square == en_passant_square
