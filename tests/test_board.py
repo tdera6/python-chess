@@ -433,3 +433,52 @@ def test_undo_move_correctly_brings_back_possible_en_passant_square(
     board.undo_move(move)
 
     assert board.en_passant_square == en_passant_square
+
+
+@pytest.mark.parametrize(
+    "fen, can_white_short_castle, can_white_long_castle, can_black_short_castle, can_black_long_castle",
+    [
+        (
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0",
+            True,
+            True,
+            True,
+            True,
+        ),
+        (
+            "rnbqkbnr/pppppppp/8/8/R7/8/1PPPPPPP/1NBQKBNR w Kkq - 0 0",
+            True,
+            False,
+            True,
+            True,
+        ),
+        (
+            "1nbqkbn1/1pppppp1/r6r/p6p/8/3PP3/PPPNNPPP/R1BQKB1R w KQ - 0 0",
+            True,
+            True,
+            False,
+            False,
+        ),
+        (
+            "1nbqkbn1/1pppppp1/r6r/p6p/P6P/R2PP2R/1PPNNPP1/2BQKB2 w - - 0 0",
+            False,
+            False,
+            False,
+            False,
+        ),
+    ],
+)
+def test_load_FEN_correctly_setup_castling_rights(
+    fen: str,
+    can_white_short_castle: int,
+    can_white_long_castle: int,
+    can_black_short_castle: int,
+    can_black_long_castle: int,
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    assert board.can_white_short_castle == can_white_short_castle
+    assert board.can_white_long_castle == can_white_long_castle
+    assert board.can_black_short_castle == can_black_short_castle
+    assert board.can_black_long_castle == can_black_long_castle
