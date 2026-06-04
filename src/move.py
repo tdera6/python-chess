@@ -9,6 +9,9 @@ class Move:
     piece_captured: int = 0
     is_promotion: bool = False
     promotion_to: int = 0
+    is_double_pawn_move: bool = False
+    is_en_passant: bool = False
+    previous_en_passant_square: int = None
 
     def __str__(self):
         columns = "abcdefgh"
