@@ -32,10 +32,10 @@ class Board:
         self.squares = [self.EMPTY] * 128
         self.turn = self.WHITE
         self.en_passant_square = None
-        self.can_white_short_castle = True
-        self.can_white_long_castle = True
-        self.can_black_short_castle = True
-        self.can_black_long_castle = True
+        self.can_white_short_castle = False
+        self.can_white_long_castle = False
+        self.can_black_short_castle = False
+        self.can_black_long_castle = False
 
     def setup_starting_position(self):
         # Set up the initial position of pieces on the board
@@ -72,7 +72,18 @@ class Board:
 
         board_position = fen_split[0]
         player_turn = fen_split[1]
+        castling_rights = fen_split[2]
         en_passant_square = fen_split[3]
+
+        # Set castling rights
+        if "K" in castling_rights:
+            self.can_white_short_castle = True
+        if "Q" in castling_rights:
+            self.can_white_long_castle = True
+        if "k" in castling_rights:
+            self.can_black_short_castle = True
+        if "q" in castling_rights:
+            self.can_black_long_castle = True
 
         columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
         if en_passant_square != "-":
