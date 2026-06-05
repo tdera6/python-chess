@@ -405,7 +405,7 @@ def test_generator_correctly_checks_if_king_can_short_castle(
             False,
         ),
         (
-            "rn2k2r/pppbqppp/3p1n2/2b1p3/2B1P3/2NPBN2/PPP1QPPP/R3K2R  b KQkq - 0 0",
+            "rn2k2r/pppbqppp/3p1n2/2b1p3/2B1P3/2NPBN2/PPP1QPPP/R3K2R b KQkq - 0 0",
             False,
         ),
     ],
