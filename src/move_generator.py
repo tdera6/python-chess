@@ -47,6 +47,10 @@ class MoveGenerator:
 
         for m in moves:
             m.previous_en_passant_square = self.board.en_passant_square
+            m.previous_white_short_castle = self.board.can_white_short_castle
+            m.previous_white_long_castle = self.board.can_white_long_castle
+            m.previous_black_short_castle = self.board.can_black_short_castle
+            m.previous_black_long_castle = self.board.can_black_long_castle
 
         return moves
 
