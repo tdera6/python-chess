@@ -174,6 +174,19 @@ class Board:
         else:
             self.en_passant_square = None
 
+        # Castling
+
+        if move.is_castling:
+            if move.is_short_castling:
+                rook = self.squares[move.to_square + 1]
+                self.squares[move.to_square + 1] = Board.EMPTY
+                self.squares[move.to_square - 1] = rook
+
+            else:  # move.is_long_castling
+                rook = self.squares[move.to_square - 2]
+                self.squares[move.to_square - 2] = Board.EMPTY
+                self.squares[move.to_square + 1] = rook
+
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
 

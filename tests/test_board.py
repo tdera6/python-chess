@@ -570,3 +570,71 @@ def test_make_move_withdraw_castling_rights(
     assert board.can_white_long_castle == can_white_long_castle
     assert board.can_black_short_castle == can_black_short_castle
     assert board.can_black_long_castle == can_black_long_castle
+
+
+def test_make_move_correctly_updates_piece_positions_after_white_short_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0")
+
+    board.make_move(
+        Move(0x04, 0x06, Board.WHITE_KING, is_castling=True, is_short_castling=True)
+    )
+
+    assert board.squares[0x04] == Board.EMPTY
+    assert board.squares[0x07] == Board.EMPTY
+    assert board.squares[0x06] == Board.WHITE_KING
+    assert board.squares[0x05] == Board.WHITE_ROOK
+
+
+def test_make_move_correctly_updates_piece_positions_after_white_long_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0")
+
+    board.make_move(
+        Move(0x04, 0x02, Board.WHITE_KING, is_castling=True, is_long_castling=True)
+    )
+
+    assert board.squares[0x04] == Board.EMPTY
+    assert board.squares[0x00] == Board.EMPTY
+    assert board.squares[0x02] == Board.WHITE_KING
+    assert board.squares[0x03] == Board.WHITE_ROOK
+
+
+def test_make_move_correctly_updates_piece_positions_after_black_short_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0")
+
+    board.make_move(
+        Move(0x74, 0x76, Board.BLACK_KING, is_castling=True, is_short_castling=True)
+    )
+
+    assert board.squares[0x74] == Board.EMPTY
+    assert board.squares[0x77] == Board.EMPTY
+    assert board.squares[0x76] == Board.BLACK_KING
+    assert board.squares[0x75] == Board.BLACK_ROOK
+
+
+def test_make_move_correctly_updates_piece_positions_after_black_long_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0")
+
+    board.make_move(
+        Move(0x74, 0x72, Board.BLACK_KING, is_castling=True, is_long_castling=True)
+    )
+
+    assert board.squares[0x74] == Board.EMPTY
+    assert board.squares[0x70] == Board.EMPTY
+    assert board.squares[0x72] == Board.BLACK_KING
+    assert board.squares[0x73] == Board.BLACK_ROOK
+
+
+def test_make_move_take_away_castling_rights_after_castling():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0")
+
+    board.make_move(
+        Move(0x74, 0x72, Board.BLACK_KING, is_castling=True, is_long_castling=True)
+    )
+
+    assert not board.can_black_long_castle
+    assert not board.can_black_short_castle
