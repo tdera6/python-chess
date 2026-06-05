@@ -197,6 +197,17 @@ class Board:
             direction = 1 if self.turn == Board.WHITE else -1
             self.squares[move.to_square + direction * 16] = move.piece_captured
             self.squares[move.to_square] = Board.EMPTY
+        elif move.is_castling:
+            if move.is_short_castling:
+                rook = self.squares[move.to_square - 1]
+                self.squares[move.to_square] = Board.EMPTY
+                self.squares[move.to_square - 1] = Board.EMPTY
+                self.squares[move.to_square + 1] = rook
+            else:  # move.is_long_castling
+                rook = self.squares[move.to_square + 1]
+                self.squares[move.to_square] = Board.EMPTY
+                self.squares[move.to_square + 1] = Board.EMPTY
+                self.squares[move.to_square - 2] = rook
         else:
             self.squares[move.to_square] = move.piece_captured
 
