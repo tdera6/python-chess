@@ -73,7 +73,7 @@ class MoveGenerator:
         )
 
     def is_square_under_atack(self, square: int, attacking_color: int) -> bool:
-        DIRECTIONS_BISHOP_QUEEN = [15, 17, -15, 17]
+        DIRECTIONS_BISHOP_QUEEN = [15, 17, -15, -17]
         DIRECTIONS_ROOK_QUEEN = [16, -16, 1, -1]
         DIRECTIONS_KNIGHT = [33, 18, -14, -31, -33, -18, 14, 31]
         DIRECTIONS_KING = [1, -17, -16, -15, -1, 15, 16, 17]
