@@ -373,3 +373,49 @@ def test_generator_correctly_checks_if_king_can_short_castle(
     generator = MoveGenerator(board)
 
     assert generator.can_king_short_castle(board.turn) == can_king_short_castle
+
+
+@pytest.mark.parametrize(
+    "fen, can_king_long_castle",
+    [
+        ("r3k2r/ppp1qppp/2npbn2/2b1p3/2B1P3/2NPBN2/PPP1QPPP/R3K2R w KQkq - 0 0", True),
+        ("r3k2r/ppp1qppp/2npbn2/2b1p3/2B1P3/3PBN2/PPP1QPPP/RN2K2R w KQkq - 0 0", False),
+        (
+            "r3k2r/ppp1qppp/2npbn2/2b1p3/2B1P3/2NP1N2/PPP1QPPP/R1B1K2R w KQkq - 0 0",
+            False,
+        ),
+        (
+            "r3k2r/ppp1qppp/2npbn2/2b1p3/2B1P3/2NP1N2/PPPB1PPP/R2QK2R w KQkq - 0 0",
+            False,
+        ),
+        (
+            "r3k2r/ppp1qppp/2npbn2/2b1p3/2B1P3/2NP1N2/PPPBQPPP/R3K2R w Kkq - 0 0",
+            False,
+        ),
+        (
+            "r3k2r/ppp1qppp/2npbn2/2b1p3/2B1P3/2NP1N2/PPPBQPPP/1R2K2R w KQkq - 0 0",
+            False,
+        ),
+        (
+            "r3k2r/ppp1qppp/2npbn2/2b1p3/2B1P3/2NP1N2/PPPBQPPP/1R2K2R b KQkq - 0 0",
+            True,
+        ),
+        (
+            "r2qk2r/pppb1ppp/2np1n2/2b1p3/2B1P3/2NPBN2/PPP1QPPP/R3K2R b KQkq - 0 0",
+            False,
+        ),
+        (
+            "rn2k2r/pppbqppp/3p1n2/2b1p3/2B1P3/2NPBN2/PPP1QPPP/R3K2R  b KQkq - 0 0",
+            False,
+        ),
+    ],
+)
+def test_generator_correctly_checks_if_king_can_long_castle(
+    fen: str, can_king_long_castle: bool
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    generator = MoveGenerator(board)
+
+    assert generator.can_king_long_castle(board.turn) == can_king_long_castle

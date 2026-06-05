@@ -526,3 +526,39 @@ class MoveGenerator:
                 return True
 
         return False
+
+    def can_king_long_castle(self, color: int) -> bool:
+        if color == Board.WHITE:
+            if not self.board.can_white_long_castle:
+                return False
+
+            # If king and rook are in correct position and king is not checked and the squares he is going to move through are not under attack and are empty
+            if (
+                self.board.squares[0x04] == Board.WHITE_KING
+                and self.board.squares[0x00] == Board.WHITE_ROOK
+                and self.board.squares[0x01] == Board.EMPTY
+                and self.board.squares[0x02] == Board.EMPTY
+                and self.board.squares[0x03] == Board.EMPTY
+                and not self.is_square_under_atack(0x02, Board.BLACK)
+                and not self.is_square_under_atack(0x03, Board.BLACK)
+                and not self.is_square_under_atack(0x04, Board.BLACK)
+            ):
+                return True
+        else:  # color == Board.BLACK
+            if not self.board.can_black_long_castle:
+                return False
+
+            # If king and rook are in correct position and king is not checked and the squares he is going to move through are not under attack and are empty
+            if (
+                self.board.squares[0x74] == Board.BLACK_KING
+                and self.board.squares[0x70] == Board.BLACK_ROOK
+                and self.board.squares[0x71] == Board.EMPTY
+                and self.board.squares[0x72] == Board.EMPTY
+                and self.board.squares[0x73] == Board.EMPTY
+                and not self.is_square_under_atack(0x72, Board.WHITE)
+                and not self.is_square_under_atack(0x73, Board.WHITE)
+                and not self.is_square_under_atack(0x74, Board.WHITE)
+            ):
+                return True
+
+        return False
