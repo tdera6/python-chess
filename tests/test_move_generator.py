@@ -419,3 +419,33 @@ def test_generator_correctly_checks_if_king_can_long_castle(
     generator = MoveGenerator(board)
 
     assert generator.can_king_long_castle(board.turn) == can_king_long_castle
+
+
+@pytest.mark.parametrize(
+    "fen, can_short_castle, can_long_castle",
+    [
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 0", True, True),
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w Qkq - 0 0", False, True),
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w Kkq - 0 0", True, False),
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w kq - 0 0", False, False),
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 0", True, True),
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQk - 0 0", True, False),
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQq - 0 0", False, True),
+        ("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R b KQ - 0 0", False, False),
+        ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQ - 0 0", False, False),
+    ],
+)
+def test_castling_moves_are_generated_by_generator(
+    fen: str, can_short_castle: bool, can_long_castle: bool
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    generator = MoveGenerator(board)
+
+    moves = generator.generate_legal_moves()
+    has_short = any(move.is_short_castling for move in moves)
+    has_long = any(move.is_long_castling for move in moves)
+
+    assert has_short == can_short_castle
+    assert has_long == can_long_castle

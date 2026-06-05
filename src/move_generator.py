@@ -428,6 +428,19 @@ class MoveGenerator:
     def generate_king_moves(self, square: int, piece: int, moves: list[Move]):
         directions = [1, -17, -16, -15, -1, 15, 16, 17]
 
+        color = piece / Board.KING
+        if self.can_king_short_castle(color):
+            moves.append(
+                Move(
+                    square, square + 2, piece, is_castling=True, is_short_castling=True
+                )
+            )
+
+        if self.can_king_long_castle(color):
+            moves.append(
+                Move(square, square - 2, piece, is_castling=True, is_long_castling=True)
+            )
+
         for direction in directions:
             to_square = square + direction
 
