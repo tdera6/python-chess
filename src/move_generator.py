@@ -458,18 +458,15 @@ class MoveGenerator:
 
         for move in moves:
             self.board.make_move(move)
-            new_moves = self.generate_moves()
 
-            # Find king position (possibly new one)
-            king_position = self.board.squares.index(
+            # When we make move the turn switches up
+            king_to_find = (
                 Board.WHITE_KING if self.board.turn == Board.BLACK else Board.BLACK_KING
             )
 
-            king_capture_threats = [
-                move for move in new_moves if move.to_square == king_position
-            ]
+            king_position = self.board.squares.index(king_to_find)
 
-            if len(king_capture_threats) == 0:
+            if not self.is_square_under_atack(king_position, self.board.turn):
                 legal_moves.append(move)
 
             self.board.undo_move(move)
