@@ -72,6 +72,95 @@ class MoveGenerator:
             turn == Board.BLACK and piece > 0
         )
 
+    def is_square_under_atack(self, square: int, attacking_color: int) -> bool:
+        DIRECTIONS_BISHOP_QUEEN = [15, 17, -15, 17]
+        DIRECTIONS_ROOK_QUEEN = [16, -16, 1, -1]
+        DIRECTIONS_KNIGHT = [33, 18, -14, -31, -33, -18, 14, 31]
+        DIRECTIONS_KING = [1, -17, -16, -15, -1, 15, 16, 17]
+
+        if attacking_color == Board.WHITE:
+            left_pawn = square - 17
+            right_pawn = square - 15
+            if (left_pawn & 0x88) == 0 and self.board.squares[
+                left_pawn
+            ] == Board.WHITE_PAWN:
+                return True
+            elif (right_pawn & 0x88) == 0 and self.board.squares[
+                right_pawn
+            ] == Board.WHITE_PAWN:
+                return True
+        else:  # attacking_color == Board.BLACK
+            left_pawn = square + 15
+            right_pawn = square + 17
+            if (left_pawn & 0x88) == 0 and self.board.squares[
+                left_pawn
+            ] == Board.BLACK_PAWN:
+                return True
+            elif (right_pawn & 0x88) == 0 and self.board.squares[
+                right_pawn
+            ] == Board.BLACK_PAWN:
+                return True
+
+        attacking_king = (
+            Board.WHITE_KING if attacking_color == Board.WHITE else Board.BLACK_KING
+        )
+        attacking_knight = (
+            Board.WHITE_KNIGHT if attacking_color == Board.WHITE else Board.BLACK_KNIGHT
+        )
+        attacking_bishop = (
+            Board.WHITE_BISHOP if attacking_color == Board.WHITE else Board.BLACK_BISHOP
+        )
+        attacking_queen = (
+            Board.WHITE_QUEEN if attacking_color == Board.WHITE else Board.BLACK_QUEEN
+        )
+        attacking_rook = (
+            Board.WHITE_ROOK if attacking_color == Board.WHITE else Board.BLACK_ROOK
+        )
+
+        for direction in DIRECTIONS_KING:
+            target_square = square + direction
+
+            if (target_square & 0x88) == 0 and self.board.squares[
+                target_square
+            ] == attacking_king:
+                return True
+
+        for direction in DIRECTIONS_KNIGHT:
+            target_square = square + direction
+
+            if (target_square & 0x88) == 0 and self.board.squares[
+                target_square
+            ] == attacking_knight:
+                return True
+
+        for direction in DIRECTIONS_BISHOP_QUEEN:
+            target_square = square + direction
+            while (target_square & 0x88) == 0:
+                if (
+                    self.board.squares[target_square] == attacking_bishop
+                    or self.board.squares[target_square] == attacking_queen
+                ):
+                    return True
+                elif self.board.squares[target_square] != Board.EMPTY:
+                    break
+
+                target_square += direction
+
+        for direction in DIRECTIONS_ROOK_QUEEN:
+            target_square = square + direction
+            while (target_square & 0x88) == 0:
+                if (
+                    self.board.squares[target_square] == attacking_rook
+                    or self.board.squares[target_square] == attacking_queen
+                ):
+                    return True
+                elif self.board.squares[target_square] != Board.EMPTY:
+                    break
+
+                target_square += direction
+
+        return False
+
     def generate_white_pawn_moves(self, square: int, piece: int, moves: list[Move]):
         one_square_ahead = square + 16
         two_squares_ahead = square + 32

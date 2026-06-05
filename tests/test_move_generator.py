@@ -248,3 +248,103 @@ def test_pawn_promotion_generates_correct_amount_of_moves(
     moves = generator.generate_moves()
 
     assert len(moves) == expected_number_of_moves
+
+
+@pytest.mark.parametrize(
+    "fen, square, attacking_color, is_under_attack",
+    [
+        (
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0",
+            0x66,
+            Board.WHITE,
+            False,
+        ),
+        (
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0",
+            0x20,
+            Board.WHITE,
+            True,
+        ),
+        (
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0",
+            0x21,
+            Board.WHITE,
+            True,
+        ),
+        (
+            "r1bqkb1r/ppp2ppp/2np1n2/4p1B1/2B1P3/2NP1N2/PPP2PPP/R2QK2R w KQkq - 0 0",
+            0x55,
+            Board.WHITE,
+            True,
+        ),
+        (
+            "r1bqkb1r/ppp2ppp/2np1n2/4p1B1/2B1P3/2NP1N2/PPP2PPP/R2QK2R w KQkq - 0 0",
+            0x36,
+            Board.BLACK,
+            True,
+        ),
+        (
+            "r2qkb1r/2pb1ppp/1pnp1n2/p3p1B1/P1B1P3/1PNP1N1P/2P2PP1/R2QK2R w KQkq - 0 0",
+            0x20,
+            Board.WHITE,
+            True,
+        ),
+        (
+            "r2qkb1r/2pb1ppp/1pnp1n2/p3p1B1/P1B1P3/1PNP1N1P/2P2PP1/R2QK2R w KQkq - 0 0",
+            0x50,
+            Board.BLACK,
+            True,
+        ),
+        (
+            "3k4/8/8/8/8/8/8/3K3R w K - 0 0",
+            0x12,
+            Board.WHITE,
+            True,
+        ),
+        (
+            "3k4/8/8/8/8/8/8/3K3R w K - 0 0",
+            0x22,
+            Board.WHITE,
+            False,
+        ),
+        (
+            "3k4/8/8/8/8/8/6P1/3K3R w K - 0 0",
+            0x25,
+            Board.WHITE,
+            True,
+        ),
+        (
+            "3k4/8/8/8/8/8/6P1/3K3R w K - 0 0",
+            0x26,
+            Board.WHITE,
+            False,
+        ),
+        (
+            "4k3/8/8/8/8/8/8/3QK3 w K - 0 0",
+            0x33,
+            Board.WHITE,
+            True,
+        ),
+        (
+            "4k3/8/2b5/1n6/8/5n2/8/3QK3 w K - 0 0",
+            0x04,
+            Board.BLACK,
+            True,
+        ),
+        (
+            "4k3/8/2b5/1n6/8/5n2/8/3QK3 w K - 0 0",
+            0x25,
+            Board.BLACK,
+            True,
+        ),
+    ],
+)
+def test_generator_correctly_evaluates_if_square_is_under_attack(
+    fen: str, square: int, attacking_color: int, is_under_attack: bool
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    generator = MoveGenerator(board)
+
+    assert generator.is_square_under_atack(square, attacking_color) == is_under_attack
