@@ -433,3 +433,326 @@ def test_undo_move_correctly_brings_back_possible_en_passant_square(
     board.undo_move(move)
 
     assert board.en_passant_square == en_passant_square
+
+
+@pytest.mark.parametrize(
+    "fen, can_white_short_castle, can_white_long_castle, can_black_short_castle, can_black_long_castle",
+    [
+        (
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0",
+            True,
+            True,
+            True,
+            True,
+        ),
+        (
+            "rnbqkbnr/pppppppp/8/8/R7/8/1PPPPPPP/1NBQKBNR w Kkq - 0 0",
+            True,
+            False,
+            True,
+            True,
+        ),
+        (
+            "1nbqkbn1/1pppppp1/r6r/p6p/8/3PP3/PPPNNPPP/R1BQKB1R w KQ - 0 0",
+            True,
+            True,
+            False,
+            False,
+        ),
+        (
+            "1nbqkbn1/1pppppp1/r6r/p6p/P6P/R2PP2R/1PPNNPP1/2BQKB2 w - - 0 0",
+            False,
+            False,
+            False,
+            False,
+        ),
+    ],
+)
+def test_load_FEN_correctly_setup_castling_rights(
+    fen: str,
+    can_white_short_castle: int,
+    can_white_long_castle: int,
+    can_black_short_castle: int,
+    can_black_long_castle: int,
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    assert board.can_white_short_castle == can_white_short_castle
+    assert board.can_white_long_castle == can_white_long_castle
+    assert board.can_black_short_castle == can_black_short_castle
+    assert board.can_black_long_castle == can_black_long_castle
+
+
+@pytest.mark.parametrize(
+    "fen, move, can_white_short_castle, can_white_long_castle, can_black_short_castle, can_black_long_castle",
+    [
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0",
+            Move(0x04, 0x14, Board.WHITE_KING),
+            False,
+            False,
+            True,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0",
+            Move(0x00, 0x40, Board.WHITE_ROOK),
+            True,
+            False,
+            True,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0",
+            Move(0x07, 0x47, Board.WHITE_ROOK),
+            False,
+            True,
+            True,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0",
+            Move(0x74, 0x64, Board.BLACK_KING),
+            True,
+            True,
+            False,
+            False,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0",
+            Move(0x77, 0x47, Board.BLACK_ROOK),
+            True,
+            True,
+            False,
+            True,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0",
+            Move(0x70, 0x60, Board.BLACK_ROOK),
+            True,
+            True,
+            True,
+            False,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/6B1/R3K2R w KQkq - 0 0",
+            Move(0x16, 0x70, Board.WHITE_BISHOP, Board.BLACK_ROOK),
+            True,
+            True,
+            True,
+            False,
+        ),
+        (
+            "r3k2r/8/8/8/8/8/1b6/R3K2R b KQkq - 0 0",
+            Move(0x11, 0x00, Board.BLACK_BISHOP, Board.WHITE_ROOK),
+            True,
+            False,
+            True,
+            True,
+        ),
+    ],
+)
+def test_make_move_withdraw_castling_rights(
+    fen: str,
+    move: Move,
+    can_white_short_castle: bool,
+    can_white_long_castle: bool,
+    can_black_short_castle: bool,
+    can_black_long_castle: bool,
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    board.make_move(move)
+
+    assert board.can_white_short_castle == can_white_short_castle
+    assert board.can_white_long_castle == can_white_long_castle
+    assert board.can_black_short_castle == can_black_short_castle
+    assert board.can_black_long_castle == can_black_long_castle
+
+
+def test_make_move_correctly_updates_piece_positions_after_white_short_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0")
+
+    board.make_move(
+        Move(0x04, 0x06, Board.WHITE_KING, is_castling=True, is_short_castling=True)
+    )
+
+    assert board.squares[0x04] == Board.EMPTY
+    assert board.squares[0x07] == Board.EMPTY
+    assert board.squares[0x06] == Board.WHITE_KING
+    assert board.squares[0x05] == Board.WHITE_ROOK
+
+
+def test_make_move_correctly_updates_piece_positions_after_white_long_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 0")
+
+    board.make_move(
+        Move(0x04, 0x02, Board.WHITE_KING, is_castling=True, is_long_castling=True)
+    )
+
+    assert board.squares[0x04] == Board.EMPTY
+    assert board.squares[0x00] == Board.EMPTY
+    assert board.squares[0x02] == Board.WHITE_KING
+    assert board.squares[0x03] == Board.WHITE_ROOK
+
+
+def test_make_move_correctly_updates_piece_positions_after_black_short_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0")
+
+    board.make_move(
+        Move(0x74, 0x76, Board.BLACK_KING, is_castling=True, is_short_castling=True)
+    )
+
+    assert board.squares[0x74] == Board.EMPTY
+    assert board.squares[0x77] == Board.EMPTY
+    assert board.squares[0x76] == Board.BLACK_KING
+    assert board.squares[0x75] == Board.BLACK_ROOK
+
+
+def test_make_move_correctly_updates_piece_positions_after_black_long_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0")
+
+    board.make_move(
+        Move(0x74, 0x72, Board.BLACK_KING, is_castling=True, is_long_castling=True)
+    )
+
+    assert board.squares[0x74] == Board.EMPTY
+    assert board.squares[0x70] == Board.EMPTY
+    assert board.squares[0x72] == Board.BLACK_KING
+    assert board.squares[0x73] == Board.BLACK_ROOK
+
+
+def test_make_move_take_away_castling_rights_after_castling():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 0")
+
+    board.make_move(
+        Move(0x74, 0x72, Board.BLACK_KING, is_castling=True, is_long_castling=True)
+    )
+
+    assert not board.can_black_long_castle
+    assert not board.can_black_short_castle
+
+
+def test_undo_move_correctly_inverts_piece_positions_after_white_short_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/R4RK1 b kq - 0 0")
+
+    board.undo_move(
+        Move(
+            0x04,
+            0x06,
+            Board.WHITE_KING,
+            is_castling=True,
+            is_short_castling=True,
+            previous_black_long_castle=True,
+            previous_black_short_castle=True,
+            previous_white_long_castle=True,
+            previous_white_short_castle=True,
+        )
+    )
+
+    assert board.squares[0x04] == Board.WHITE_KING
+    assert board.squares[0x07] == Board.WHITE_ROOK
+    assert board.squares[0x06] == Board.EMPTY
+    assert board.squares[0x05] == Board.EMPTY
+
+
+def test_undo_move_correctly_inverts_piece_positions_after_white_long_castle():
+    board = Board()
+    board.load_FEN("r3k2r/8/8/8/8/8/8/2KR3R b kq - 0 0")
+
+    board.undo_move(
+        Move(
+            0x04,
+            0x02,
+            Board.WHITE_KING,
+            is_castling=True,
+            is_long_castling=True,
+            previous_black_long_castle=True,
+            previous_black_short_castle=True,
+            previous_white_long_castle=True,
+            previous_white_short_castle=True,
+        )
+    )
+
+    assert board.squares[0x04] == Board.WHITE_KING
+    assert board.squares[0x00] == Board.WHITE_ROOK
+    assert board.squares[0x02] == Board.EMPTY
+    assert board.squares[0x03] == Board.EMPTY
+
+
+def test_undo_move_correctly_inverts_piece_positions_after_black_short_castle():
+    board = Board()
+    board.load_FEN("r4rk1/8/8/8/8/8/8/R3K2R w KQ - 0 0")
+
+    board.undo_move(
+        Move(
+            0x74,
+            0x76,
+            Board.BLACK_KING,
+            is_castling=True,
+            is_short_castling=True,
+            previous_black_long_castle=True,
+            previous_black_short_castle=True,
+            previous_white_long_castle=True,
+            previous_white_short_castle=True,
+        )
+    )
+
+    assert board.squares[0x74] == Board.BLACK_KING
+    assert board.squares[0x77] == Board.BLACK_ROOK
+    assert board.squares[0x76] == Board.EMPTY
+    assert board.squares[0x75] == Board.EMPTY
+
+
+def test_undo_move_correctly_inverts_piece_positions_after_black_long_castle():
+    board = Board()
+    board.load_FEN("2kr3r/8/8/8/8/8/8/R3K2R w KQ - 0 0")
+
+    board.undo_move(
+        Move(
+            0x74,
+            0x72,
+            Board.BLACK_KING,
+            is_castling=True,
+            is_long_castling=True,
+            previous_black_long_castle=True,
+            previous_black_short_castle=True,
+            previous_white_long_castle=True,
+            previous_white_short_castle=True,
+        )
+    )
+
+    assert board.squares[0x74] == Board.BLACK_KING
+    assert board.squares[0x70] == Board.BLACK_ROOK
+    assert board.squares[0x72] == Board.EMPTY
+    assert board.squares[0x73] == Board.EMPTY
+
+
+def test_undo_move_gives_back_castling_rights_after_castling():
+    board = Board()
+    board.load_FEN("2kr3r/8/8/8/8/8/8/R3K2R w KQ - 0 0")
+
+    board.undo_move(
+        Move(
+            0x74,
+            0x72,
+            Board.BLACK_KING,
+            is_castling=True,
+            is_long_castling=True,
+            previous_black_long_castle=True,
+            previous_black_short_castle=True,
+            previous_white_long_castle=True,
+            previous_white_short_castle=True,
+        )
+    )
+
+    assert board.can_black_long_castle
+    assert board.can_black_short_castle

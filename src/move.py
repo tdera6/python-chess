@@ -12,6 +12,13 @@ class Move:
     is_double_pawn_move: bool = False
     is_en_passant: bool = False
     previous_en_passant_square: int = None
+    is_castling: bool = False
+    is_short_castling: bool = False
+    is_long_castling: bool = False
+    previous_white_short_castle: bool = False
+    previous_white_long_castle: bool = False
+    previous_black_short_castle: bool = False
+    previous_black_long_castle: bool = False
 
     def __str__(self):
         columns = "abcdefgh"

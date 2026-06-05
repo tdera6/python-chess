@@ -30,9 +30,12 @@ class Board:
 
     def __init__(self):
         self.squares = [self.EMPTY] * 128
-
         self.turn = self.WHITE
         self.en_passant_square = None
+        self.can_white_short_castle = False
+        self.can_white_long_castle = False
+        self.can_black_short_castle = False
+        self.can_black_long_castle = False
 
     def setup_starting_position(self):
         # Set up the initial position of pieces on the board
@@ -69,7 +72,18 @@ class Board:
 
         board_position = fen_split[0]
         player_turn = fen_split[1]
+        castling_rights = fen_split[2]
         en_passant_square = fen_split[3]
+
+        # Set castling rights
+        if "K" in castling_rights:
+            self.can_white_short_castle = True
+        if "Q" in castling_rights:
+            self.can_white_long_castle = True
+        if "k" in castling_rights:
+            self.can_black_short_castle = True
+        if "q" in castling_rights:
+            self.can_black_long_castle = True
 
         columns = ["a", "b", "c", "d", "e", "f", "g", "h"]
         if en_passant_square != "-":
@@ -126,12 +140,52 @@ class Board:
         else:
             self.squares[move.to_square] = move.piece_moved
 
+        # Handle withdrawal of castling rights
+        if abs(move.piece_moved) == Board.KING:
+            if self.turn == Board.WHITE:
+                self.can_white_short_castle = False
+                self.can_white_long_castle = False
+            else:
+                self.can_black_short_castle = False
+                self.can_black_long_castle = False
+
+        if move.piece_moved == Board.WHITE_ROOK and move.from_square == 0x00:
+            self.can_white_long_castle = False
+        elif move.piece_moved == Board.WHITE_ROOK and move.from_square == 0x07:
+            self.can_white_short_castle = False
+        elif move.piece_moved == Board.BLACK_ROOK and move.from_square == 0x70:
+            self.can_black_long_castle = False
+        elif move.piece_moved == Board.BLACK_ROOK and move.from_square == 0x77:
+            self.can_black_short_castle = False
+
+        if move.piece_captured == Board.WHITE_ROOK and move.to_square == 0x00:
+            self.can_white_long_castle = False
+        elif move.piece_captured == Board.WHITE_ROOK and move.to_square == 0x07:
+            self.can_white_short_castle = False
+        elif move.piece_captured == Board.BLACK_ROOK and move.to_square == 0x70:
+            self.can_black_long_castle = False
+        elif move.piece_captured == Board.BLACK_ROOK and move.to_square == 0x77:
+            self.can_black_short_castle = False
+
         # Handle en passant square change
         if move.is_double_pawn_move:
             direction = 1 if self.turn == Board.WHITE else -1
             self.en_passant_square = move.to_square - 16 * direction
         else:
             self.en_passant_square = None
+
+        # Castling
+
+        if move.is_castling:
+            if move.is_short_castling:
+                rook = self.squares[move.to_square + 1]
+                self.squares[move.to_square + 1] = Board.EMPTY
+                self.squares[move.to_square - 1] = rook
+
+            else:  # move.is_long_castling
+                rook = self.squares[move.to_square - 2]
+                self.squares[move.to_square - 2] = Board.EMPTY
+                self.squares[move.to_square + 1] = rook
 
         # Switch turn
         self.turn = Board.BLACK if self.turn == Board.WHITE else Board.WHITE
@@ -143,8 +197,25 @@ class Board:
             direction = 1 if self.turn == Board.WHITE else -1
             self.squares[move.to_square + direction * 16] = move.piece_captured
             self.squares[move.to_square] = Board.EMPTY
+        elif move.is_castling:
+            if move.is_short_castling:
+                rook = self.squares[move.to_square - 1]
+                self.squares[move.to_square] = Board.EMPTY
+                self.squares[move.to_square - 1] = Board.EMPTY
+                self.squares[move.to_square + 1] = rook
+            else:  # move.is_long_castling
+                rook = self.squares[move.to_square + 1]
+                self.squares[move.to_square] = Board.EMPTY
+                self.squares[move.to_square + 1] = Board.EMPTY
+                self.squares[move.to_square - 2] = rook
         else:
             self.squares[move.to_square] = move.piece_captured
+
+        # Handle castling rights
+        self.can_white_short_castle = move.previous_white_short_castle
+        self.can_white_long_castle = move.previous_white_long_castle
+        self.can_black_short_castle = move.previous_black_short_castle
+        self.can_black_long_castle = move.previous_black_long_castle
 
         # Handle en passant square
         self.en_passant_square = move.previous_en_passant_square
