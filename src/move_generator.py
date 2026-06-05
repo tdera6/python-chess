@@ -492,3 +492,37 @@ class MoveGenerator:
             )
 
             moves.append(move)
+
+    def can_king_short_castle(self, color: int) -> bool:
+        if color == Board.WHITE:
+            if not self.board.can_white_short_castle:
+                return False
+
+            # If king and rook are in correct position and king is not checked and the squares he is going to move through are not under attack and are empty
+            if (
+                self.board.squares[0x04] == Board.WHITE_KING
+                and self.board.squares[0x07] == Board.WHITE_ROOK
+                and self.board.squares[0x05] == Board.EMPTY
+                and self.board.squares[0x06] == Board.EMPTY
+                and not self.is_square_under_atack(0x04, Board.BLACK)
+                and not self.is_square_under_atack(0x05, Board.BLACK)
+                and not self.is_square_under_atack(0x06, Board.BLACK)
+            ):
+                return True
+        else:  # color == Board.BLACK
+            if not self.board.can_black_short_castle:
+                return False
+
+            # If king and rook are in correct position and king is not checked and the squares he is going to move through are not under attack and are empty
+            if (
+                self.board.squares[0x74] == Board.BLACK_KING
+                and self.board.squares[0x77] == Board.BLACK_ROOK
+                and self.board.squares[0x75] == Board.EMPTY
+                and self.board.squares[0x76] == Board.EMPTY
+                and not self.is_square_under_atack(0x74, Board.WHITE)
+                and not self.is_square_under_atack(0x75, Board.WHITE)
+                and not self.is_square_under_atack(0x76, Board.WHITE)
+            ):
+                return True
+
+        return False

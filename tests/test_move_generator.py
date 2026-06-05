@@ -348,3 +348,28 @@ def test_generator_correctly_evaluates_if_square_is_under_attack(
     generator = MoveGenerator(board)
 
     assert generator.is_square_under_atack(square, attacking_color) == is_under_attack
+
+
+@pytest.mark.parametrize(
+    "fen, can_king_short_castle",
+    [
+        ("r1bqkbnr/p1pp2pp/1pn5/4p3/2B1P3/5N2/PPPP1PPP/RNB1K2R w KQkq - 0 0", True),
+        ("r1bqkbnr/p1pp2pp/1pn5/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 0", False),
+        ("r1bqkbnr/p1pp2pp/1pn5/4p3/2B1P3/5N1R/PPPP1PPP/RNB1K3 w Qkq - 0 0", False),
+        ("r1bqkbnr/p1pp2pp/1pn5/4p3/2b1P3/5N2/PPPP1PPP/RNB1K2R w KQkq - 0 0", False),
+        ("r1bqkbnr/p1pp2pp/1pn5/4p3/1b2P3/3P1N2/PPP2PPP/RNB1K2R w KQkq - 0 0", False),
+        ("r1bqkbnr/p1pp2pp/1pn5/4p3/4P3/5N2/PPPPKPPP/RNB4R w kq - 0 0", False),
+        ("rnb1k2r/pppp1ppp/5n2/4p3/4P3/1PN5/P1PP2PP/R1BQKBNR b KQkq - 0 0", True),
+        ("rnb1k2r/pppp1ppp/5n2/4p3/4P3/1PN5/P1PP2PP/R1BQKBNR b KQq - 0 0", False),
+        ("rnb1k1nr/pppp1ppp/8/4p3/4P3/1PN5/P1PP2PP/R1BQKBNR b KQkq - 0 0", False),
+    ],
+)
+def test_generator_correctly_checks_if_king_can_short_castle(
+    fen: str, can_king_short_castle: bool
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    generator = MoveGenerator(board)
+
+    assert generator.can_king_short_castle(board.turn) == can_king_short_castle
