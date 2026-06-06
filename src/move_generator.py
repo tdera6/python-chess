@@ -579,3 +579,19 @@ class MoveGenerator:
                 return True
 
         return False
+
+    def perft(self, depth: int) -> int:
+
+        nodes = 0
+
+        if depth == 0:
+            return 1
+
+        moves = self.generate_legal_moves()
+
+        for move in moves:
+            self.board.make_move(move)
+            nodes += self.perft(depth - 1)
+            self.board.undo_move(move)
+
+        return nodes
