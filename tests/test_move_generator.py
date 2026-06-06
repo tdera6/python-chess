@@ -449,3 +449,33 @@ def test_castling_moves_are_generated_by_generator(
 
     assert has_short == can_short_castle
     assert has_long == can_long_castle
+
+
+@pytest.mark.perft
+@pytest.mark.parametrize(
+    "fen, depth, expected_num_of_moves",
+    [
+        ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 1, 20),
+        ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 2, 400),
+        ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 3, 8902),
+        ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 4, 197281),
+        ("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1", 1, 48),
+        (
+            "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+            2,
+            2039,
+        ),
+        (
+            "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+            3,
+            97862,
+        ),
+    ],
+)
+def test_move_generator_perft(fen: str, depth: int, expected_num_of_moves: int):
+    board = Board()
+    board.load_FEN(fen)
+
+    generator = MoveGenerator(board)
+
+    assert generator.perft(depth) == expected_num_of_moves
