@@ -1,9 +1,12 @@
 import pygame
+from pathlib import Path
 
 WIDTH = 1000
 HEIGHT = 1000
 
 SQUARE_SIZE = WIDTH / 8
+
+BASE_DIR = Path(__file__).parent.parent.absolute()
 
 
 class GUI:
@@ -11,6 +14,14 @@ class GUI:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
+        self.piece_images = []
+
+        for color in ["white", "black"]:
+            for piece in ["pawn", "knight", "bishop", "rook", "queen", "king"]:
+                img = pygame.image.load(f"{BASE_DIR}/assets/images/{color}-{piece}.png")
+                scaled_img = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
+                converted_alpha_img = pygame.Surface.convert_alpha(scaled_img)
+                self.piece_images.append(converted_alpha_img)
 
     def main_loop(self):
         running = True
