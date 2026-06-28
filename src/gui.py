@@ -1,5 +1,6 @@
 import pygame
 from pathlib import Path
+from src.board import Board
 
 WIDTH = 1000
 HEIGHT = 1000
@@ -8,20 +9,52 @@ SQUARE_SIZE = WIDTH / 8
 
 BASE_DIR = Path(__file__).parent.parent.absolute()
 
+PIECES = [
+    None,
+    "white-pawn",
+    "white-knight",
+    "white-bishop",
+    "white-rook",
+    "white-queen",
+    "white-king",
+    "black-king",
+    "black-queen",
+    "black-rook",
+    "black-bishop",
+    "black-knight",
+    "black-pawn",
+]
+
 
 class GUI:
-    def __init__(self):
+    def __init__(self, board: Board):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
-        self.piece_images = []
+        self.piece_images = [None]
+        self.board = board
+        self.load_images()
 
-        for color in ["white", "black"]:
-            for piece in ["pawn", "knight", "bishop", "rook", "queen", "king"]:
-                img = pygame.image.load(f"{BASE_DIR}/assets/images/{color}-{piece}.png")
+    def load_images(self):
+        for piece in PIECES:
+            if piece is not None:
+                img = pygame.image.load(f"{BASE_DIR}/assets/images/{piece}.png")
                 scaled_img = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
                 converted_alpha_img = pygame.Surface.convert_alpha(scaled_img)
                 self.piece_images.append(converted_alpha_img)
+
+    def display_pieces(self):
+        for row in range(8):
+            for column in range(8):
+                piece = self.board.squares[row * 16 + column]
+                if piece != 0:
+                    self.screen.blit(
+                        self.piece_images[piece],
+                        (
+                            (column * SQUARE_SIZE),
+                            (HEIGHT - (row + 1) * SQUARE_SIZE),
+                        ),
+                    )
 
     def main_loop(self):
         running = True
@@ -35,7 +68,7 @@ class GUI:
 
             for i in range(8):
                 for j in range(8):
-                    square_color = "white" if (i + j) % 2 == 0 else "black"
+                    square_color = "#eeeed2" if (i + j) % 2 == 0 else "#769656"
                     pygame.draw.rect(
                         self.screen,
                         square_color,
@@ -43,6 +76,8 @@ class GUI:
                             i * SQUARE_SIZE, j * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE
                         ),
                     )
+
+            self.display_pieces()
 
             pygame.display.flip()
             self.clock.tick(60)
