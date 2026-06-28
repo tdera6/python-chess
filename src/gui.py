@@ -56,6 +56,16 @@ class GUI:
                         ),
                     )
 
+    def square_click_detection(self, event) -> tuple[int, int] | None:
+        if event.button != 1:
+            return
+
+        x, y = event.pos
+        column = x // SQUARE_SIZE
+        row = (HEIGHT - y) // SQUARE_SIZE
+
+        return column, row
+
     def main_loop(self):
         running = True
 
@@ -63,6 +73,9 @@ class GUI:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    print(self.square_click_detection(event))
 
             self.screen.fill("green")
 
