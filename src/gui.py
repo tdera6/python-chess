@@ -56,15 +56,15 @@ class GUI:
                         ),
                     )
 
-    def square_click_detection(self, event) -> tuple[int, int] | None:
+    def square_click_detection(self, event) -> int:
         if event.button != 1:
-            return
+            return -1
 
         x, y = event.pos
         column = x // SQUARE_SIZE
         row = (HEIGHT - y) // SQUARE_SIZE
 
-        return column, row
+        return row * 16 + column
 
     def main_loop(self):
         running = True
