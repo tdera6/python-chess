@@ -1,6 +1,7 @@
 import pygame
 from pathlib import Path
 from src.board import Board
+from src.move_generator import MoveGenerator
 
 WIDTH = 1000
 HEIGHT = 1000
@@ -34,6 +35,7 @@ class GUI:
         self.piece_images = [None]
         self.board = board
         self.load_images()
+        self.clicked_squares = []
 
     def load_images(self):
         for piece in PIECES:
@@ -56,6 +58,28 @@ class GUI:
                         ),
                     )
 
+    def handle_click_detection(self, event):
+        clicked_square = self.square_click_detection(event)
+
+        if clicked_square == -1:
+            self.clicked_squares.clear()
+
+        self.clicked_squares.append(clicked_square)
+
+        if len(self.clicked_squares) == 2:
+            generator = MoveGenerator(self.board)
+            legal_moves = generator.generate_legal_moves()
+
+            for move in legal_moves:
+                if (
+                    move.from_square == self.clicked_squares[0]
+                    and move.to_square == self.clicked_squares[1]
+                ):
+                    self.board.make_move(move)
+                    break
+
+            self.clicked_squares.clear()
+
     def square_click_detection(self, event) -> int:
         if event.button != 1:
             return -1
@@ -75,7 +99,7 @@ class GUI:
                     running = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    print(self.square_click_detection(event))
+                    self.handle_click_detection(event)
 
             self.screen.fill("green")
 
