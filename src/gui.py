@@ -63,6 +63,20 @@ class GUI:
 
         if clicked_square == -1:
             self.clicked_squares.clear()
+            return
+
+        if len(self.clicked_squares) == 0 and self.board.squares[clicked_square] == 0:
+            return
+
+        if clicked_square in self.clicked_squares:
+            self.clicked_squares.clear()
+            return
+
+        if (
+            len(self.clicked_squares) == 1
+            and self.board.squares[clicked_square] * self.board.turn > 0
+        ):
+            self.clicked_squares.clear()
 
         self.clicked_squares.append(clicked_square)
 
@@ -88,7 +102,7 @@ class GUI:
         column = x // SQUARE_SIZE
         row = (HEIGHT - y) // SQUARE_SIZE
 
-        return row * 16 + column
+        return int(row * 16 + column)
 
     def main_loop(self):
         running = True
@@ -106,6 +120,12 @@ class GUI:
             for i in range(8):
                 for j in range(8):
                     square_color = "#eeeed2" if (i + j) % 2 == 0 else "#769656"
+                    square_number_gui = (7 - j) * 16 + i
+
+                    piece_on_square = self.board.squares[square_number_gui]
+                    current_turn = self.board.turn
+                    highlight_color = pygame.Color(200, 200, 100, 100)
+
                     pygame.draw.rect(
                         self.screen,
                         square_color,
@@ -113,6 +133,18 @@ class GUI:
                             i * SQUARE_SIZE, j * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE
                         ),
                     )
+
+                    if (
+                        square_number_gui in self.clicked_squares
+                        and piece_on_square != 0
+                        and piece_on_square * current_turn > 0
+                    ):
+                        highlighted_square = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE))
+                        highlighted_square.set_alpha(128)
+                        highlighted_square.fill("#a0c322")
+                        self.screen.blit(
+                            highlighted_square, (i * SQUARE_SIZE, j * SQUARE_SIZE)
+                        )
 
             self.display_pieces()
 
