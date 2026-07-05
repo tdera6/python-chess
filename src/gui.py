@@ -35,6 +35,7 @@ class GUI:
         self.board = board
         self.load_images()
         self.clicked_squares = []
+        self.possible_moves = MoveGenerator(self.board).generate_legal_moves()
 
     def load_images(self):
         for piece in PIECES:
@@ -79,15 +80,15 @@ class GUI:
         self.clicked_squares.append(clicked_square)
 
         if len(self.clicked_squares) == 2:
-            generator = MoveGenerator(self.board)
-            legal_moves = generator.generate_legal_moves()
-
-            for move in legal_moves:
+            for move in self.possible_moves:
                 if (
                     move.from_square == self.clicked_squares[0]
                     and move.to_square == self.clicked_squares[1]
                 ):
                     self.board.make_move(move)
+                    self.possible_moves = MoveGenerator(
+                        self.board
+                    ).generate_legal_moves()
                     break
 
             self.clicked_squares.clear()
@@ -135,6 +136,10 @@ class GUI:
                         square_number_gui in self.clicked_squares
                         and piece_on_square != 0
                         and piece_on_square * current_turn > 0
+                        and any(
+                            move.from_square == square_number_gui
+                            for move in self.possible_moves
+                        )
                     ):
                         highlighted_square = pygame.Surface((SQUARE_SIZE, SQUARE_SIZE))
                         highlighted_square.set_alpha(128)
