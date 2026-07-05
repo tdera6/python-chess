@@ -11,7 +11,6 @@ SQUARE_SIZE = WIDTH / 8
 BASE_DIR = Path(__file__).parent.parent.absolute()
 
 PIECES = [
-    None,
     "white-pawn",
     "white-knight",
     "white-bishop",
@@ -39,11 +38,10 @@ class GUI:
 
     def load_images(self):
         for piece in PIECES:
-            if piece is not None:
-                img = pygame.image.load(f"{BASE_DIR}/assets/images/{piece}.png")
-                scaled_img = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
-                converted_alpha_img = pygame.Surface.convert_alpha(scaled_img)
-                self.piece_images.append(converted_alpha_img)
+            img = pygame.image.load(f"{BASE_DIR}/assets/images/{piece}.png")
+            scaled_img = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
+            converted_alpha_img = pygame.Surface.convert_alpha(scaled_img)
+            self.piece_images.append(converted_alpha_img)
 
     def display_pieces(self):
         for row in range(8):
