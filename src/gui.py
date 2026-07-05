@@ -124,7 +124,6 @@ class GUI:
 
                     piece_on_square = self.board.squares[square_number_gui]
                     current_turn = self.board.turn
-                    highlight_color = pygame.Color(200, 200, 100, 100)
 
                     pygame.draw.rect(
                         self.screen,
