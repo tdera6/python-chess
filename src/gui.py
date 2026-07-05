@@ -32,6 +32,8 @@ class GUI:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         self.piece_images = [None]
+        self.dot_image = None
+        self.circle_image = None
         self.board = board
         self.load_images()
         self.clicked_squares = []
@@ -43,6 +45,18 @@ class GUI:
             scaled_img = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
             converted_alpha_img = pygame.Surface.convert_alpha(scaled_img)
             self.piece_images.append(converted_alpha_img)
+
+        img = pygame.image.load(f"{BASE_DIR}/assets/images/dot.png")
+        scaled_img = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
+        converted_alpha_img = scaled_img.convert_alpha()
+        converted_alpha_img.set_alpha(64)
+        self.dot_image = converted_alpha_img
+
+        img = pygame.image.load(f"{BASE_DIR}/assets/images/circle.png")
+        scaled_img = pygame.transform.scale(img, (SQUARE_SIZE, SQUARE_SIZE))
+        converted_alpha_img = scaled_img.convert_alpha()
+        converted_alpha_img.set_alpha(64)
+        self.circle_image = converted_alpha_img
 
     def display_pieces(self):
         for row in range(8):
@@ -147,6 +161,23 @@ class GUI:
                         self.screen.blit(
                             highlighted_square, (i * SQUARE_SIZE, j * SQUARE_SIZE)
                         )
+
+                    if len(self.clicked_squares) == 1:
+                        for move in self.possible_moves:
+                            if (
+                                move.from_square == self.clicked_squares[0]
+                                and move.to_square == square_number_gui
+                            ):
+                                if move.piece_captured == 0:
+                                    self.screen.blit(
+                                        self.dot_image,
+                                        (i * SQUARE_SIZE, j * SQUARE_SIZE),
+                                    )
+                                else:
+                                    self.screen.blit(
+                                        self.circle_image,
+                                        (i * SQUARE_SIZE, j * SQUARE_SIZE),
+                                    )
 
             self.display_pieces()
 
