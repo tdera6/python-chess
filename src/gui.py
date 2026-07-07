@@ -113,7 +113,9 @@ class GUI:
 
         x, y = event.pos
         column = x // SQUARE_SIZE
-        row = (HEIGHT - y) // SQUARE_SIZE
+
+        # prevent row = 8 if player clicks on 0 px
+        row = min((HEIGHT - y) // SQUARE_SIZE, 7)
 
         return int(row * 16 + column)
 
