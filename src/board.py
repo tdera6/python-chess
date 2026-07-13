@@ -36,6 +36,8 @@ class Board:
         self.can_white_long_castle = False
         self.can_black_short_castle = False
         self.can_black_long_castle = False
+        self.white_king_square = 0x04
+        self.black_king_square = 0x74
 
     def setup_starting_position(self):
         # Set up the initial position of pieces on the board
@@ -125,6 +127,10 @@ class Board:
                     self.squares[square] = piece
                     column += 1
             row -= 1
+
+        # Find white and black kings
+        self.white_king_square = self.squares.index(6)
+        self.black_king_square = self.squares.index(-6)
 
     def make_move(self, move: Move):
         self.squares[move.from_square] = Board.EMPTY

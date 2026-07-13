@@ -756,3 +756,17 @@ def test_undo_move_gives_back_castling_rights_after_castling():
 
     assert board.can_black_long_castle
     assert board.can_black_short_castle
+
+
+@pytest.mark.parametrize(
+    "fen, expected_white_king_square, expected_black_king_square",
+    [("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0", 0x04, 0x74)],
+)
+def test_board_finds_squares_of_kings(
+    fen: str, expected_white_king_square: int, expected_black_king_square: int
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    assert board.white_king_square == expected_white_king_square
+    assert board.black_king_square == expected_black_king_square
