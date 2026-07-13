@@ -146,6 +146,13 @@ class Board:
         else:
             self.squares[move.to_square] = move.piece_moved
 
+        # Update kings positions
+        if move.piece_moved == Board.WHITE_KING:
+            self.white_king_square = move.to_square
+
+        elif move.piece_moved == Board.BLACK_KING:
+            self.black_king_square = move.to_square
+
         # Handle withdrawal of castling rights
         if abs(move.piece_moved) == Board.KING:
             if self.turn == Board.WHITE:
@@ -216,6 +223,12 @@ class Board:
                 self.squares[move.to_square - 2] = rook
         else:
             self.squares[move.to_square] = move.piece_captured
+
+        # Update kings positions
+        if move.piece_moved == Board.WHITE_KING:
+            self.white_king_square = move.from_square
+        elif move.piece_moved == Board.BLACK_KING:
+            self.black_king_square = move.from_square
 
         # Handle castling rights
         self.can_white_short_castle = move.previous_white_short_castle
