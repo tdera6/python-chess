@@ -595,3 +595,23 @@ class MoveGenerator:
             self.board.undo_move(move)
 
         return nodes
+
+    def get_current_king_square(self) -> int:
+        if self.board.turn == Board.WHITE:
+            return self.board.white_king_square
+        else:  # self.board.turn == Board.BLACK
+            return self.board.black_king_square
+
+    def check_game_over(self, legal_moves: list[Move]) -> str | None:
+
+        if len(legal_moves) > 0:
+            return None
+
+        # No legal moves
+
+        current_king_square = self.get_current_king_square()
+
+        if self.is_square_under_atack(current_king_square, self.board.turn * (-1)):
+            return "CHECKMATE"
+        else:
+            return "STALEMATE"

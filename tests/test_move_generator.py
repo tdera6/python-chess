@@ -481,3 +481,25 @@ def test_move_generator_perft(fen: str, depth: int, expected_num_of_moves: int):
     generator = MoveGenerator(board)
 
     assert generator.perft(depth) == expected_num_of_moves
+
+
+@pytest.mark.parametrize(
+    "fen, expected_result",
+    [
+        ("6k1/8/8/8/8/8/5PPP/3q2K1 w - - 0 2", "CHECKMATE"),
+        ("6k1/8/8/8/8/8/3q1PPP/6K1 w - - 0 2", None),
+        ("6k1/8/8/8/8/6q1/8/7K w - - 0 2", "STALEMATE"),
+        (
+            "r1bqkbnr/1ppp1Qpp/p1n5/4p3/2B1P3/8/PPPP1PPP/RNB1K1NR b KQkq - 0 2",
+            "CHECKMATE",
+        ),
+    ],
+)
+def test_game_over_detection(fen: str, expected_result: str | None):
+    board = Board()
+    board.load_FEN(fen)
+
+    generator = MoveGenerator(board)
+    moves = generator.generate_legal_moves()
+
+    assert generator.check_game_over(moves) == expected_result
