@@ -6,10 +6,10 @@ from src.move_generator import MoveGenerator
 @pytest.mark.parametrize(
     "test_input, target_square, expected_number_of_moves",
     [
-        ("8/8/8/8/8/8/3P4/8 w - - 0 0", 0x13, 2),
-        ("8/3p4/8/8/8/8/8/8 b - - 0 0", 0x63, 2),
-        ("8/8/8/8/8/4p3/4P3/8 w - - 0 0", 0x14, 0),
-        ("8/8/8/8/8/4p3/4P3/8 b - - 0 0", 0x24, 0),
+        ("7k/8/8/8/8/8/3P4/7K w - - 0 0", 0x13, 2),
+        ("7k/3p4/8/8/8/8/8/7K b - - 0 0", 0x63, 2),
+        ("7k/8/8/8/8/4p3/4P3/7K w - - 0 0", 0x14, 0),
+        ("7k/8/8/8/8/4p3/4P3/7K b - - 0 0", 0x24, 0),
     ],
 )
 def test_single_pawn_movement_without_capturing(
@@ -31,14 +31,14 @@ def test_single_pawn_movement_without_capturing(
 @pytest.mark.parametrize(
     "test_input, expected_number_of_moves",
     [
-        ("8/8/8/8/8/2p1p3/3P4/8 w - - 0 0", 4),
-        ("8/8/8/8/8/2p1p3/3P4/8 b - - 0 0", 4),
-        ("8/8/8/8/8/pppppppp/PPPPPPPP/8 w - - 0 0", 14),
-        ("8/8/8/8/8/pppppppp/PPPPPPPP/8 b - - 0 0", 14),
-        ("8/2p5/2Ppp3/p3Ppp1/1p4P1/1P5P/8/8 w - - 0 0", 3),
-        ("8/2p5/2Ppp3/p3Ppp1/1p4P1/1P5P/8/8 b - - 0 0", 5),
-        ("8/6p1/2p1p3/3P4/2P5/1P6/6PP/8 w - - 0 0", 9),
-        ("8/6p1/2p1p3/3P4/2P5/1P6/6PP/8 b - - 0 0", 6),
+        ("7k/8/8/8/8/2p1p3/3P4/7K w - - 0 0", 4),
+        ("7k/8/8/8/8/2p1p3/3P4/7K b - - 0 0", 4),
+        ("7k/8/8/8/8/pppppppp/PPPPPPPP/7K w - - 0 0", 14),
+        ("7k/8/8/8/8/pppppppp/PPPPPPPP/7K b - - 0 0", 14),
+        ("7k/2p5/2Ppp3/p3Ppp1/1p4P1/1P5P/8/7K w - - 0 0", 3),
+        ("7k/2p5/2Ppp3/p3Ppp1/1p4P1/1P5P/8/7K b - - 0 0", 5),
+        ("7k/6p1/2p1p3/3P4/2P5/1P6/6PP/7K w - - 0 0", 9),
+        ("7k/6p1/2p1p3/3P4/2P5/1P6/6PP/7K b - - 0 0", 6),
     ],
 )
 def test_multiple_pawns_integration_without_en_passant(
@@ -61,16 +61,16 @@ def test_multiple_pawns_integration_without_en_passant(
 @pytest.mark.parametrize(
     "test_input, expected_number_of_moves",
     [
-        ("8/8/8/8/8/2N5/8/8 w - - 0 0", 8),
-        ("8/8/8/8/8/8/8/N7 w - - 0 0", 2),
-        ("8/8/8/8/8/8/8/1N6 w - - 0 0", 3),
-        ("8/8/8/8/8/2n5/8/8 b - - 0 0", 8),
-        ("8/8/8/8/8/8/8/n7 b - - 0 0", 2),
-        ("8/8/8/8/8/8/8/1n6 b - - 0 0", 3),
+        ("7k/8/8/8/8/2N5/8/7K w - - 0 0", 8),
+        ("7k/8/8/8/8/8/8/N6K w - - 0 0", 2),
+        ("7k/8/8/8/8/8/8/1N5K w - - 0 0", 3),
+        ("7k/8/8/8/8/2n5/8/7K b - - 0 0", 8),
+        ("7k/8/8/8/8/8/8/n6K b - - 0 0", 2),
+        ("7k/8/8/8/8/8/8/1n5K b - - 0 0", 3),
         ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 0", 4),
         ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b - - 0 0", 4),
-        ("8/8/8/8/2p1p3/1p3p2/3N4/8 w - - 0 0", 6),
-        ("8/8/8/8/2P1p3/1P3P2/3n4/8 b - - 0 0", 5),
+        ("7k/8/8/8/2p1p3/1p3p2/3N4/7K w - - 0 0", 6),
+        ("7k/8/8/8/2P1p3/1P3P2/3n4/7K b - - 0 0", 5),
     ],
 )
 def test_knights_movement(test_input, expected_number_of_moves):
@@ -95,20 +95,20 @@ def test_knights_movement(test_input, expected_number_of_moves):
 @pytest.mark.parametrize(
     "test_input, expected_number_of_moves",
     [
-        ("B7/8/8/8/8/8/8/8 w - - 0 0", 7),
-        ("1B6/8/8/8/8/8/8/8 w - - 0 0", 7),
-        ("8/8/8/8/4B3/8/8/8 w - - 0 0", 13),
-        ("8/8/8/3P1P2/4B3/8/8/8 w - - 0 0", 6),
-        ("8/8/8/3P1P2/4B3/8/2p5/8 w - - 0 0", 5),
-        ("8/8/8/2P5/1B6/2p5/8/8 w - - 0 0", 3),
-        ("8/8/8/8/8/8/1P6/B7 w - - 0 0", 0),
-        ("b7/8/8/8/8/8/8/8 b - - 0 0", 7),
-        ("1b6/8/8/8/8/8/8/8 b - - 0 0", 7),
-        ("8/8/8/8/4b3/8/8/8 b - - 0 0", 13),
-        ("8/8/8/3p1p2/4b3/8/8/8 b - - 0 0", 6),
-        ("8/8/8/3p1p2/4b3/8/2P5/8 b - - 0 0", 5),
-        ("8/8/8/2p5/1b6/2P5/8/8 b - - 0 0", 3),
-        ("8/8/8/8/8/8/1p6/b7 b - - 0 0", 0),
+        ("B5k1/8/8/8/8/8/8/6K1 w - - 0 0", 7),
+        ("1B5k/8/8/8/8/8/8/7K w - - 0 0", 7),
+        ("6k1/8/8/8/4B3/8/8/6K1 w - - 0 0", 13),
+        ("6k1/8/8/3P1P2/4B3/8/8/6K1 w - - 0 0", 6),
+        ("6k1/8/8/3P1P2/4B3/8/2p5/6K1 w - - 0 0", 5),
+        ("6k1/8/8/2P5/1B6/2p5/8/6K1 w - - 0 0", 3),
+        ("6k1/8/8/8/8/8/1P6/B5K1 w - - 0 0", 0),
+        ("b5k1/8/8/8/8/8/8/6K1 b - - 0 0", 7),
+        ("1b4k1/8/8/8/8/8/8/6K1 b - - 0 0", 7),
+        ("6k1/8/8/8/4b3/8/8/6K1 b - - 0 0", 13),
+        ("6k1/8/8/3p1p2/4b3/8/8/6K1 b - - 0 0", 6),
+        ("6k1/8/8/3p1p2/4b3/8/2P5/6K1 b - - 0 0", 5),
+        ("6k1/8/8/2p5/1b6/2P5/8/6K1 b - - 0 0", 3),
+        ("7k/8/8/8/8/8/1p6/b6K b - - 0 0", 0),
     ],
 )
 def test_bishop_movement(test_input, expected_number_of_moves):
@@ -133,14 +133,14 @@ def test_bishop_movement(test_input, expected_number_of_moves):
 @pytest.mark.parametrize(
     "test_input, expected_number_of_moves",
     [
-        ("R7/8/8/8/8/8/8/8 w - - 0 0", 14),
-        ("8/8/1R6/8/8/8/8/8 w - - 0 0", 14),
-        ("8/8/4P3/4RP2/8/8/8/8 w - - 0 0", 8),
-        ("8/8/4p3/4Rp2/8/8/8/8 w - - 0 0", 10),
-        ("8/8/8/8/8/5r2/8/8 b - - 0 0", 14),
-        ("8/8/8/8/8/8/8/r7 b - - 0 0", 14),
-        ("8/8/8/P7/rP6/P7/8/8 b - - 0 0", 3),
-        ("8/8/8/p7/rp6/p7/8/8 b - - 0 0", 0),
+        ("R7/7k/8/8/8/8/8/7K w - - 0 0", 14),
+        ("7k/8/1R6/8/8/8/8/7K w - - 0 0", 14),
+        ("7k/8/4P3/4RP2/8/8/8/7K w - - 0 0", 8),
+        ("7k/8/4p3/4Rp2/8/8/8/7K w - - 0 0", 10),
+        ("7k/8/8/8/8/5r2/8/7K b - - 0 0", 14),
+        ("7k/8/8/8/8/8/7K/r7 b - - 0 0", 14),
+        ("7k/8/8/P7/rP6/P7/8/7K b - - 0 0", 3),
+        ("7k/8/8/p7/rp6/p7/8/7K b - - 0 0", 0),
     ],
 )
 def test_rook_movement(test_input, expected_number_of_moves):
@@ -161,11 +161,11 @@ def test_rook_movement(test_input, expected_number_of_moves):
 @pytest.mark.parametrize(
     "test_input, expected_number_of_moves",
     [
-        ("8/8/8/8/1Q6/8/8/8 w - - 0 0", 23),
-        ("8/8/3p4/1P6/1Q1p4/8/3p4/8 w - - 0 0", 12),
-        ("Q7/PP6/8/8/8/8/8/8 w - - 0 0", 7),
-        ("8/8/3ppp2/3pqp2/3ppp2/8/8/8 b - - 0 0", 0),
-        ("8/2PpP3/2pQp3/2PpP3/8/8/8/8 w - - 0 0", 4),
+        ("7k/8/8/8/1Q6/8/8/7K w - - 0 0", 23),
+        ("7k/8/3p4/1P6/1Q1p4/8/3p4/7K w - - 0 0", 12),
+        ("Q7/PP5k/8/8/8/8/8/7K w - - 0 0", 7),
+        ("7k/8/3ppp2/3pqp2/3ppp2/8/8/7K b - - 0 0", 0),
+        ("7k/2PpP3/2pQp3/2PpP3/8/8/8/7K w - - 0 0", 4),
     ],
 )
 def test_queen_movement(test_input, expected_number_of_moves):
@@ -186,11 +186,11 @@ def test_queen_movement(test_input, expected_number_of_moves):
 @pytest.mark.parametrize(
     "test_input, expected_number_of_moves",
     [
-        ("8/8/8/8/8/2K5/8/8 w - - 0 0", 8),
-        ("8/8/8/8/1PPP4/1pKp4/8/8 w - - 0 0", 5),
+        ("7k/8/8/8/8/2K5/8/8 w - - 0 0", 8),
+        ("7k/8/8/8/1PPP4/1pKp4/8/8 w - - 0 0", 5),
         ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - - 0 0", 0),
-        ("7k/8/8/8/8/8/8/8 b - - 0 0", 3),
-        ("8/8/8/6pp/6Pk/7p/8/8 b - - 0 0", 2),
+        ("7k/8/8/8/8/8/8/K7 b - - 0 0", 3),
+        ("8/8/8/6pp/6Pk/7p/8/K7 b - - 0 0", 2),
     ],
 )
 def test_king_movement(test_input, expected_number_of_moves):
@@ -232,10 +232,10 @@ def test_only_legal_moves_are_generated_without_special_moves(
 @pytest.mark.parametrize(
     "test_input, expected_number_of_moves",
     [
-        ("8/3P4/8/8/8/8/8/8 w - - 0 0", 4),
-        ("2q5/3P4/8/8/8/8/8/8 w - - 0 0", 8),
-        ("8/8/8/8/8/8/2p5/8 b - - 0 0", 4),
-        ("8/8/8/8/8/8/p7/1B6 b - - 0 0", 8),
+        ("7k/3P4/8/8/8/8/8/7K w - - 0 0", 4),
+        ("2q4k/3P4/8/8/8/8/8/7K w - - 0 0", 8),
+        ("7k/8/8/8/8/8/2p5/7K b - - 0 0", 4),
+        ("7k/8/8/8/8/8/p7/1B5K b - - 0 0", 8),
     ],
 )
 def test_pawn_promotion_generates_correct_amount_of_moves(
@@ -247,7 +247,9 @@ def test_pawn_promotion_generates_correct_amount_of_moves(
 
     moves = generator.generate_moves()
 
-    assert len(moves) == expected_number_of_moves
+    pawn_moves = [move for move in moves if abs(move.piece_moved) == 1]
+
+    assert len(pawn_moves) == expected_number_of_moves
 
 
 @pytest.mark.parametrize(
