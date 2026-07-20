@@ -193,7 +193,7 @@ class GUI:
                     self.handle_click_detection(event)
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r:
+                    if event.key == pygame.K_r and self.game_state is not None:
                         self.restart_game()
 
             self.screen.fill("green")
