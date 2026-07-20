@@ -174,6 +174,13 @@ class GUI:
             ),
         )
 
+    def restart_game(self):
+        self.board = Board()
+        self.board.load_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        self.clicked_squares = []
+        self.game_state = None
+        self.possible_moves = MoveGenerator(self.board).generate_legal_moves()
+
     def main_loop(self):
         running = True
 
@@ -184,6 +191,10 @@ class GUI:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_click_detection(event)
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self.restart_game()
 
             self.screen.fill("green")
 
