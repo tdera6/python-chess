@@ -29,6 +29,7 @@ PIECES = [
 class GUI:
     def __init__(self, board: Board):
         pygame.init()
+        pygame.font.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         self.piece_images = [None]
@@ -38,6 +39,8 @@ class GUI:
         self.load_images()
         self.clicked_squares = []
         self.possible_moves = MoveGenerator(self.board).generate_legal_moves()
+        self.game_state = None
+        self.font = pygame.font.SysFont("Arial", 30)
 
     def load_images(self):
         for piece in PIECES:
@@ -100,9 +103,9 @@ class GUI:
                     and move.to_square == self.clicked_squares[1]
                 ):
                     self.board.make_move(move)
-                    self.possible_moves = MoveGenerator(
-                        self.board
-                    ).generate_legal_moves()
+                    generator = MoveGenerator(self.board)
+                    self.possible_moves = generator.generate_legal_moves()
+                    self.game_state = generator.check_game_over(self.possible_moves)
                     break
 
             self.clicked_squares.clear()
@@ -118,6 +121,58 @@ class GUI:
         row = min((HEIGHT - y) // SQUARE_SIZE, 7)
 
         return int(row * 16 + column)
+
+    def display_game_over_screen(self):
+        game_over_surface = pygame.Surface((5 * SQUARE_SIZE, 4 * SQUARE_SIZE))
+        game_over_surface.fill("white")
+        game_over_surface.set_alpha(230)
+
+        if self.game_state == "CHECKMATE":
+            text = f"{'WHITE' if self.board.turn else 'BLACK'} WIN!"
+        elif self.game_state == "STALEMATE":
+            text = "DRAW!"
+        else:
+            text = ""
+
+        text_surface = self.font.render(text, False, (0, 0, 0))
+        text_button = self.font.render("Click 'R' to play again", False, (0, 0, 0))
+
+        button = pygame.Surface((3 * SQUARE_SIZE, SQUARE_SIZE))
+        button.fill("white")
+        button.set_alpha(255)
+        button.blit(
+            text_button,
+            (
+                (button.get_width() - text_button.get_width()) // 2,
+                (button.get_height() - text_button.get_height()) // 2,
+            ),
+        )
+
+        game_over_surface.blit(
+            text_surface,
+            (
+                (game_over_surface.get_width() - text_surface.get_width()) // 2,
+                (game_over_surface.get_height() - text_surface.get_height()) // 2
+                - SQUARE_SIZE,
+            ),
+        )
+
+        game_over_surface.blit(
+            button,
+            (
+                (game_over_surface.get_width() - button.get_width()) // 2,
+                (game_over_surface.get_height() - button.get_height()) // 2
+                + SQUARE_SIZE,
+            ),
+        )
+
+        self.screen.blit(
+            game_over_surface,
+            (
+                (WIDTH - game_over_surface.get_width()) // 2,
+                (HEIGHT - game_over_surface.get_height()) // 2,
+            ),
+        )
 
     def main_loop(self):
         running = True
@@ -182,6 +237,9 @@ class GUI:
                                     )
 
             self.display_pieces()
+
+            if self.game_state is not None:
+                self.display_game_over_screen()
 
             pygame.display.flip()
             self.clock.tick(60)
