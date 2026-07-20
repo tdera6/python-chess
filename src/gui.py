@@ -128,7 +128,7 @@ class GUI:
         game_over_surface.set_alpha(230)
 
         if self.game_state == "CHECKMATE":
-            text = f"{'WHITE' if self.board.turn else 'BLACK'} WIN!"
+            text = f"{'WHITE' if self.board.turn == Board.BLACK else 'BLACK'} WIN!"
         elif self.game_state == "STALEMATE":
             text = "DRAW!"
         else:
