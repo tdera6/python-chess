@@ -41,6 +41,7 @@ class GUI:
         self.possible_moves = MoveGenerator(self.board).generate_legal_moves()
         self.game_state = None
         self.font = pygame.font.SysFont("Arial", 30)
+        self.big_font = pygame.font.SysFont("Arial", 64)
 
     def load_images(self):
         for piece in PIECES:
@@ -171,6 +172,120 @@ class GUI:
             (
                 (WIDTH - game_over_surface.get_width()) // 2,
                 (HEIGHT - game_over_surface.get_height()) // 2,
+            ),
+        )
+
+    def display_piece_promotion_screen(self):
+        piece_promotion_screen = pygame.Surface((5 * SQUARE_SIZE, 4 * SQUARE_SIZE))
+        piece_promotion_screen.fill("white")
+        piece_promotion_screen.set_alpha(230)
+
+        color = self.board.turn
+
+        title_text = self.big_font.render("PROMOTION", False, (0, 0, 0))
+        cancel_text = self.font.render("To cancel click ESC", False, (0, 0, 0))
+        knight_letter_text = self.big_font.render("A", False, (0, 0, 0))
+        bishop_letter_text = self.big_font.render("S", False, (0, 0, 0))
+        rook_letter_text = self.big_font.render("D", False, (0, 0, 0))
+        queen_letter_text = self.big_font.render("F", False, (0, 0, 0))
+
+        knight_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        knight_box.fill("white")
+        knight_box.blit(self.piece_images[Board.KNIGHT * color], (0, 0))
+        knight_box.blit(
+            knight_letter_text,
+            (
+                (knight_box.get_width() - knight_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        bishop_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        bishop_box.fill("white")
+        bishop_box.blit(self.piece_images[Board.BISHOP * color], (0, 0))
+        bishop_box.blit(
+            bishop_letter_text,
+            (
+                (bishop_box.get_width() - bishop_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        rook_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        rook_box.fill("white")
+        rook_box.blit(self.piece_images[Board.ROOK * color], (0, 0))
+        rook_box.blit(
+            rook_letter_text,
+            (
+                (rook_box.get_width() - rook_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        queen_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        queen_box.fill("white")
+        queen_box.blit(self.piece_images[Board.QUEEN * color], (0, 0))
+        queen_box.blit(
+            queen_letter_text,
+            (
+                (queen_box.get_width() - queen_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            title_text,
+            (
+                (piece_promotion_screen.get_width() - title_text.get_width()) // 2,
+                SQUARE_SIZE * 0.2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            knight_box,
+            (
+                0.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - knight_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            bishop_box,
+            (
+                1.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - bishop_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            rook_box,
+            (
+                2.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - rook_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            queen_box,
+            (
+                3.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - queen_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            cancel_text,
+            (
+                (piece_promotion_screen.get_width() - cancel_text.get_width()) // 2,
+                piece_promotion_screen.get_height() - SQUARE_SIZE * 0.6,
+            ),
+        )
+
+        self.screen.blit(
+            piece_promotion_screen,
+            (
+                (WIDTH - piece_promotion_screen.get_width()) // 2,
+                (HEIGHT - piece_promotion_screen.get_height()) // 2,
             ),
         )
 
