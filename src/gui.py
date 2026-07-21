@@ -43,6 +43,7 @@ class GUI:
         self.game_state = None
         self.font = pygame.font.SysFont("Arial", 30)
         self.big_font = pygame.font.SysFont("Arial", 64)
+        self.promotion_flag = False
 
     def load_images(self):
         for piece in PIECES:
@@ -77,6 +78,10 @@ class GUI:
                     )
 
     def handle_click_detection(self, event):
+
+        if self.promotion_flag:
+            return
+
         clicked_square = self.square_click_detection(event)
 
         if clicked_square == -1:
@@ -367,6 +372,9 @@ class GUI:
 
             if self.game_state is not None:
                 self.display_game_over_screen()
+
+            if self.promotion_flag:
+                self.display_piece_promotion_screen()
 
             pygame.display.flip()
             self.clock.tick(60)
