@@ -302,6 +302,25 @@ class GUI:
         self.game_state = None
         self.possible_moves = MoveGenerator(self.board).generate_legal_moves()
 
+    def find_promotion_move(self, promotion_to: int) -> Move:
+        move = [
+            move
+            for move in self.possible_moves
+            if move.from_square == self.clicked_squares[0]
+            and move.to_square == self.clicked_squares[1]
+            and move.promotion_to == promotion_to * self.board.turn
+        ]
+
+        return move[0]
+
+    def proceed_move(self, move: Move):
+        self.board.make_move(move)
+        generator = MoveGenerator(self.board)
+        self.possible_moves = generator.generate_legal_moves()
+        self.game_state = generator.check_game_over(self.possible_moves)
+        self.clicked_squares.clear()
+        self.promotion_flag = False
+
     def main_loop(self):
         running = True
 
