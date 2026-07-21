@@ -756,3 +756,122 @@ def test_undo_move_gives_back_castling_rights_after_castling():
 
     assert board.can_black_long_castle
     assert board.can_black_short_castle
+
+
+@pytest.mark.parametrize(
+    "fen, expected_white_king_square, expected_black_king_square",
+    [
+        ("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 0", 0x04, 0x74),
+        ("7k/8/8/p7/rp6/p7/8/7K w - - 0 0", 0x07, 0x77),
+    ],
+)
+def test_board_finds_squares_of_kings(
+    fen: str, expected_white_king_square: int, expected_black_king_square: int
+):
+    board = Board()
+    board.load_FEN(fen)
+
+    assert board.white_king_square == expected_white_king_square
+    assert board.black_king_square == expected_black_king_square
+
+
+@pytest.mark.parametrize(
+    "fen, move, expected_white_king_square, expected_black_king_square",
+    [
+        (
+            "7k/8/8/p7/rp6/p7/8/7K w - - 0 0",
+            Move(0x07, 0x06, Board.WHITE_KING),
+            0x06,
+            0x77,
+        ),
+        (
+            "7k/8/8/p7/rp6/p7/8/7K b - - 0 0",
+            Move(0x77, 0x76, Board.BLACK_KING),
+            0x07,
+            0x76,
+        ),
+        (
+            "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w - - 0 0",
+            Move(
+                0x04, 0x06, Board.WHITE_KING, is_castling=True, is_short_castling=True
+            ),
+            0x06,
+            0x74,
+        ),
+        (
+            "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w - - 0 0",
+            Move(
+                0x74,
+                0x72,
+                Board.BLACK_KING,
+                is_castling=True,
+                is_long_castling=True,
+            ),
+            0x04,
+            0x72,
+        ),
+    ],
+)
+def test_make_move_updates_king_position(
+    fen: str,
+    move: Move,
+    expected_white_king_square: int,
+    expected_black_king_square: int,
+):
+    board = Board()
+    board.load_FEN(fen)
+    board.make_move(move)
+
+    assert board.white_king_square == expected_white_king_square
+    assert board.black_king_square == expected_black_king_square
+
+
+@pytest.mark.parametrize(
+    "fen, move, expected_white_king_square, expected_black_king_square",
+    [
+        (
+            "7k/8/8/p7/rp6/p7/8/6K1 w - - 0 0",
+            Move(0x07, 0x06, Board.WHITE_KING),
+            0x07,
+            0x77,
+        ),
+        (
+            "6k1/8/8/p7/rp6/p7/8/7K b - - 0 0",
+            Move(0x77, 0x76, Board.BLACK_KING),
+            0x07,
+            0x77,
+        ),
+        (
+            "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R4RK1 w - - 0 0",
+            Move(
+                0x04, 0x06, Board.WHITE_KING, is_castling=True, is_short_castling=True
+            ),
+            0x04,
+            0x74,
+        ),
+        (
+            "2kr3r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w - - 0 0",
+            Move(
+                0x74,
+                0x72,
+                Board.BLACK_KING,
+                is_castling=True,
+                is_long_castling=True,
+            ),
+            0x04,
+            0x74,
+        ),
+    ],
+)
+def test_undo_move_updates_king_position(
+    fen: str,
+    move: Move,
+    expected_white_king_square: int,
+    expected_black_king_square: int,
+):
+    board = Board()
+    board.load_FEN(fen)
+    board.undo_move(move)
+
+    assert board.white_king_square == expected_white_king_square
+    assert board.black_king_square == expected_black_king_square

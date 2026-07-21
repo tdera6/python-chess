@@ -36,6 +36,8 @@ class Board:
         self.can_white_long_castle = False
         self.can_black_short_castle = False
         self.can_black_long_castle = False
+        self.white_king_square = 0x04
+        self.black_king_square = 0x74
 
     def setup_starting_position(self):
         # Set up the initial position of pieces on the board
@@ -126,6 +128,10 @@ class Board:
                     column += 1
             row -= 1
 
+        # Find white and black kings
+        self.white_king_square = self.squares.index(6)
+        self.black_king_square = self.squares.index(-6)
+
     def make_move(self, move: Move):
         self.squares[move.from_square] = Board.EMPTY
 
@@ -139,6 +145,13 @@ class Board:
             self.squares[move.to_square - 16 * direction] = Board.EMPTY
         else:
             self.squares[move.to_square] = move.piece_moved
+
+        # Update kings positions
+        if move.piece_moved == Board.WHITE_KING:
+            self.white_king_square = move.to_square
+
+        elif move.piece_moved == Board.BLACK_KING:
+            self.black_king_square = move.to_square
 
         # Handle withdrawal of castling rights
         if abs(move.piece_moved) == Board.KING:
@@ -210,6 +223,12 @@ class Board:
                 self.squares[move.to_square - 2] = rook
         else:
             self.squares[move.to_square] = move.piece_captured
+
+        # Update kings positions
+        if move.piece_moved == Board.WHITE_KING:
+            self.white_king_square = move.from_square
+        elif move.piece_moved == Board.BLACK_KING:
+            self.black_king_square = move.from_square
 
         # Handle castling rights
         self.can_white_short_castle = move.previous_white_short_castle
