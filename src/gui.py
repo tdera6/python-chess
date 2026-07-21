@@ -2,6 +2,7 @@ import pygame
 from pathlib import Path
 from src.board import Board
 from src.move_generator import MoveGenerator
+from src.move import Move
 
 WIDTH = 1000
 HEIGHT = 1000
@@ -41,6 +42,8 @@ class GUI:
         self.possible_moves = MoveGenerator(self.board).generate_legal_moves()
         self.game_state = None
         self.font = pygame.font.SysFont("Arial", 30)
+        self.big_font = pygame.font.SysFont("Arial", 64)
+        self.promotion_flag = False
 
     def load_images(self):
         for piece in PIECES:
@@ -75,6 +78,10 @@ class GUI:
                     )
 
     def handle_click_detection(self, event):
+
+        if self.promotion_flag:
+            return
+
         clicked_square = self.square_click_detection(event)
 
         if clicked_square == -1:
@@ -102,10 +109,11 @@ class GUI:
                     move.from_square == self.clicked_squares[0]
                     and move.to_square == self.clicked_squares[1]
                 ):
-                    self.board.make_move(move)
-                    generator = MoveGenerator(self.board)
-                    self.possible_moves = generator.generate_legal_moves()
-                    self.game_state = generator.check_game_over(self.possible_moves)
+                    if move.is_promotion:
+                        self.promotion_flag = True
+                        return
+
+                    self.proceed_move(move)
                     break
 
             self.clicked_squares.clear()
@@ -174,12 +182,145 @@ class GUI:
             ),
         )
 
+    def display_piece_promotion_screen(self):
+        piece_promotion_screen = pygame.Surface((5 * SQUARE_SIZE, 4 * SQUARE_SIZE))
+        piece_promotion_screen.fill("white")
+        piece_promotion_screen.set_alpha(230)
+
+        color = self.board.turn
+
+        title_text = self.big_font.render("PROMOTION", False, (0, 0, 0))
+        cancel_text = self.font.render("To cancel click ESC", False, (0, 0, 0))
+        knight_letter_text = self.big_font.render("A", False, (0, 0, 0))
+        bishop_letter_text = self.big_font.render("S", False, (0, 0, 0))
+        rook_letter_text = self.big_font.render("D", False, (0, 0, 0))
+        queen_letter_text = self.big_font.render("F", False, (0, 0, 0))
+
+        knight_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        knight_box.fill("white")
+        knight_box.blit(self.piece_images[Board.KNIGHT * color], (0, 0))
+        knight_box.blit(
+            knight_letter_text,
+            (
+                (knight_box.get_width() - knight_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        bishop_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        bishop_box.fill("white")
+        bishop_box.blit(self.piece_images[Board.BISHOP * color], (0, 0))
+        bishop_box.blit(
+            bishop_letter_text,
+            (
+                (bishop_box.get_width() - bishop_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        rook_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        rook_box.fill("white")
+        rook_box.blit(self.piece_images[Board.ROOK * color], (0, 0))
+        rook_box.blit(
+            rook_letter_text,
+            (
+                (rook_box.get_width() - rook_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        queen_box = pygame.Surface((SQUARE_SIZE, 2 * SQUARE_SIZE))
+        queen_box.fill("white")
+        queen_box.blit(self.piece_images[Board.QUEEN * color], (0, 0))
+        queen_box.blit(
+            queen_letter_text,
+            (
+                (queen_box.get_width() - queen_letter_text.get_width()) // 2,
+                SQUARE_SIZE * 1.2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            title_text,
+            (
+                (piece_promotion_screen.get_width() - title_text.get_width()) // 2,
+                SQUARE_SIZE * 0.2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            knight_box,
+            (
+                0.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - knight_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            bishop_box,
+            (
+                1.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - bishop_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            rook_box,
+            (
+                2.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - rook_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            queen_box,
+            (
+                3.5 * SQUARE_SIZE,
+                (piece_promotion_screen.get_height() - queen_box.get_height()) // 2,
+            ),
+        )
+
+        piece_promotion_screen.blit(
+            cancel_text,
+            (
+                (piece_promotion_screen.get_width() - cancel_text.get_width()) // 2,
+                piece_promotion_screen.get_height() - SQUARE_SIZE * 0.6,
+            ),
+        )
+
+        self.screen.blit(
+            piece_promotion_screen,
+            (
+                (WIDTH - piece_promotion_screen.get_width()) // 2,
+                (HEIGHT - piece_promotion_screen.get_height()) // 2,
+            ),
+        )
+
     def restart_game(self):
         self.board = Board()
         self.board.load_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         self.clicked_squares = []
         self.game_state = None
         self.possible_moves = MoveGenerator(self.board).generate_legal_moves()
+
+    def find_promotion_move(self, promotion_to: int) -> Move:
+        move = [
+            move
+            for move in self.possible_moves
+            if move.from_square == self.clicked_squares[0]
+            and move.to_square == self.clicked_squares[1]
+            and move.promotion_to == promotion_to * self.board.turn
+        ]
+
+        return move[0]
+
+    def proceed_move(self, move: Move):
+        self.board.make_move(move)
+        generator = MoveGenerator(self.board)
+        self.possible_moves = generator.generate_legal_moves()
+        self.game_state = generator.check_game_over(self.possible_moves)
+        self.clicked_squares.clear()
+        self.promotion_flag = False
 
     def main_loop(self):
         running = True
@@ -195,6 +336,29 @@ class GUI:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r and self.game_state is not None:
                         self.restart_game()
+
+                    if not self.promotion_flag:
+                        continue
+
+                    if event.key == pygame.K_a:
+                        move = self.find_promotion_move(Board.KNIGHT)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_s:
+                        move = self.find_promotion_move(Board.BISHOP)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_d:
+                        move = self.find_promotion_move(Board.ROOK)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_f:
+                        move = self.find_promotion_move(Board.QUEEN)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_ESCAPE:
+                        self.clicked_squares.clear()
+                        self.promotion_flag = False
 
             self.screen.fill("green")
 
@@ -251,6 +415,9 @@ class GUI:
 
             if self.game_state is not None:
                 self.display_game_over_screen()
+
+            if self.promotion_flag:
+                self.display_piece_promotion_screen()
 
             pygame.display.flip()
             self.clock.tick(60)
