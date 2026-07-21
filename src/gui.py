@@ -2,6 +2,7 @@ import pygame
 from pathlib import Path
 from src.board import Board
 from src.move_generator import MoveGenerator
+from src.move import Move
 
 WIDTH = 1000
 HEIGHT = 1000
