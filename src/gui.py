@@ -109,10 +109,11 @@ class GUI:
                     move.from_square == self.clicked_squares[0]
                     and move.to_square == self.clicked_squares[1]
                 ):
-                    self.board.make_move(move)
-                    generator = MoveGenerator(self.board)
-                    self.possible_moves = generator.generate_legal_moves()
-                    self.game_state = generator.check_game_over(self.possible_moves)
+                    if move.is_promotion:
+                        self.promotion_flag = True
+                        return
+
+                    self.proceed_move(move)
                     break
 
             self.clicked_squares.clear()
