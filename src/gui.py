@@ -337,6 +337,29 @@ class GUI:
                     if event.key == pygame.K_r and self.game_state is not None:
                         self.restart_game()
 
+                    if not self.promotion_flag:
+                        continue
+
+                    if event.key == pygame.K_a:
+                        move = self.find_promotion_move(Board.KNIGHT)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_s:
+                        move = self.find_promotion_move(Board.BISHOP)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_d:
+                        move = self.find_promotion_move(Board.ROOK)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_f:
+                        move = self.find_promotion_move(Board.QUEEN)
+                        self.proceed_move(move)
+
+                    elif event.key == pygame.K_ESCAPE:
+                        self.clicked_squares.clear()
+                        self.promotion_flag = False
+
             self.screen.fill("green")
 
             for i in range(8):
