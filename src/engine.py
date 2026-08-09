@@ -2,6 +2,22 @@ from src.board import Board
 from src.move import Move
 from src.move_generator import MoveGenerator
 
+PIECE_VALUES = {
+    0: 0,
+    1: 1,
+    2: 3,
+    3: 3,
+    4: 5,
+    5: 9,
+    6: 0,
+    -1: -1,
+    -2: -3,
+    -3: -3,
+    -4: -5,
+    -5: -9,
+    -6: 0,
+}
+
 
 class ChessEngine:
     LOWEST_SCORE = -100000
@@ -125,15 +141,6 @@ class ChessEngine:
         material_advantage = 0
 
         for piece in board.squares:
-            if abs(piece) == 1:
-                material_advantage += piece
-            elif abs(piece) == 2:
-                material_advantage += 3 * (1 if piece > 0 else -1)
-            elif abs(piece) == 3:
-                material_advantage += 3 * (1 if piece > 0 else -1)
-            elif abs(piece) == 4:
-                material_advantage += 5 * (1 if piece > 0 else -1)
-            elif abs(piece) == 5:
-                material_advantage += 9 * (1 if piece > 0 else -1)
+            material_advantage += PIECE_VALUES[piece]
 
         return material_advantage
