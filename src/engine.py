@@ -32,6 +32,32 @@ class ChessEngine:
         self, depth: int, is_maximizing: bool, alpha: int, beta: int
     ) -> Move:
 
+        if depth == 0:
+            color = self.board.turn
+            if color == Board.WHITE:
+                king_square = self.board.white_king_square
+                enemy_color = Board.BLACK
+            else:
+                king_square = self.board.black_king_square
+                enemy_color = Board.WHITE
+
+            move_generator = MoveGenerator(self.board)
+
+            if move_generator.is_square_under_atack(king_square, enemy_color):
+                legal_moves = move_generator.generate_legal_moves()
+                game_state = move_generator.check_game_over(legal_moves)
+
+                if game_state == "CHECKMATE":
+                    if self.board.turn == Board.BLACK:
+                        return 1000
+                    else:
+                        return -1000
+
+                elif game_state == "STALEMATE":
+                    return 0
+
+            return self.evaluate_position(self.board)
+
         legal_moves = MoveGenerator(self.board).generate_legal_moves()
 
         game_state = MoveGenerator(self.board).check_game_over(legal_moves)
@@ -44,9 +70,6 @@ class ChessEngine:
 
         elif game_state == "STALEMATE":
             return 0
-
-        if depth == 0:
-            return self.evaluate_position(self.board)
 
         if is_maximizing:
             best_value = ChessEngine.LOWEST_SCORE
