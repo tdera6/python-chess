@@ -1,7 +1,7 @@
 import pytest
-from src.engine import ChessEngine
-from src.move_generator import MoveGenerator
+
 from src.board import Board
+from src.engine import ChessEngine
 
 
 @pytest.mark.parametrize(
