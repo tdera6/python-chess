@@ -162,3 +162,12 @@ class ChessEngine:
             material_advantage += PIECE_VALUES[piece]
 
         return material_advantage
+
+    def score_move_priority(self, move: Move) -> int:
+        if move.piece_captured == 0:
+            return 0
+
+        attacking_piece = abs(PIECE_VALUES[move.piece_moved])
+        captured_piece = abs(PIECE_VALUES[move.piece_captured])
+
+        return (10 * captured_piece) - attacking_piece
