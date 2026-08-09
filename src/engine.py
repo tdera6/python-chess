@@ -32,10 +32,21 @@ class ChessEngine:
         self, depth: int, is_maximizing: bool, alpha: int, beta: int
     ) -> Move:
 
+        legal_moves = MoveGenerator(self.board).generate_legal_moves()
+
+        game_state = MoveGenerator(self.board).check_game_over(legal_moves)
+
+        if game_state == "CHECKMATE":
+            if self.board.turn == Board.BLACK:
+                return 1000
+            else:
+                return -1000
+
+        elif game_state == "STALEMATE":
+            return 0
+
         if depth == 0:
             return self.evaluate_position(self.board)
-
-        legal_moves = MoveGenerator(self.board).generate_legal_moves()
 
         if is_maximizing:
             best_value = ChessEngine.LOWEST_SCORE
@@ -122,22 +133,6 @@ class ChessEngine:
             return best_move
 
     def evaluate_position(self, board: Board):
-
-        generator = MoveGenerator(board)
-
-        legal_moves = generator.generate_legal_moves()
-
-        game_state = generator.check_game_over(legal_moves)
-
-        if game_state == "CHECKMATE":
-            if self.board.turn == Board.BLACK:
-                return 1000
-            else:
-                return -1000
-
-        elif game_state == "STALEMATE":
-            return 0
-
         material_advantage = 0
 
         for piece in board.squares:
