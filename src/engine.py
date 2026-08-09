@@ -22,7 +22,7 @@ PIECE_VALUES = {
 class ChessEngine:
     LOWEST_SCORE = -100000
     HIGHEST_SCORE = 100000
-    DEFAULT_DEPTH = 3
+    DEFAULT_DEPTH = 5
 
     def __init__(self, board: Board):
         self.board = board
@@ -44,7 +44,8 @@ class ChessEngine:
             move_generator = MoveGenerator(self.board)
 
             if move_generator.is_square_under_atack(king_square, enemy_color):
-                legal_moves = move_generator.generate_legal_moves()
+                legal_moves = MoveGenerator(self.board).generate_legal_moves()
+                legal_moves.sort(key=self.score_move_priority, reverse=True)
                 game_state = move_generator.check_game_over(legal_moves)
 
                 if game_state == "CHECKMATE":
@@ -59,6 +60,7 @@ class ChessEngine:
             return self.evaluate_position(self.board)
 
         legal_moves = MoveGenerator(self.board).generate_legal_moves()
+        legal_moves.sort(key=self.score_move_priority, reverse=True)
 
         game_state = MoveGenerator(self.board).check_game_over(legal_moves)
 
@@ -105,6 +107,7 @@ class ChessEngine:
 
     def find_best_move(self) -> Move:
         legal_moves = MoveGenerator(self.board).generate_legal_moves()
+        legal_moves.sort(key=self.score_move_priority, reverse=True)
 
         alpha = ChessEngine.LOWEST_SCORE
         beta = ChessEngine.HIGHEST_SCORE
