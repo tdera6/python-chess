@@ -66,9 +66,9 @@ class ChessEngine:
 
         if game_state == "CHECKMATE":
             if self.board.turn == Board.BLACK:
-                return 1000
+                return 1000 * depth
             else:
-                return -1000
+                return -1000 * depth
 
         elif game_state == "STALEMATE":
             return 0

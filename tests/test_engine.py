@@ -39,6 +39,8 @@ def test_correct_board_evaluation(fen: str, expected_eval: int):
             0x01,
             0x71,
         ),
+        ("3k4/2q5/1r6/8/8/8/K7/8 b - - 0 0", 0x62, 0x60),
+        ("3K4/2Q5/1R6/8/8/8/k7/8 w - - 0 0", 0x62, 0x60),
     ],
 )
 def test_mini_max_finds_mate_in_one(
