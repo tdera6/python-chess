@@ -22,7 +22,7 @@ PIECE_VALUES = {
 class ChessEngine:
     LOWEST_SCORE = -100000
     HIGHEST_SCORE = 100000
-    DEFAULT_DEPTH = 5
+    DEFAULT_DEPTH = 3
 
     def __init__(self, board: Board):
         self.board = board
