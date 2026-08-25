@@ -1,8 +1,11 @@
-import pygame
 from pathlib import Path
+
+import pygame
+
 from src.board import Board
-from src.move_generator import MoveGenerator
+from src.engine import ChessEngine
 from src.move import Move
+from src.move_generator import MoveGenerator
 
 WIDTH = 1000
 HEIGHT = 1000
@@ -316,6 +319,20 @@ class GUI:
 
     def proceed_move(self, move: Move):
         self.board.make_move(move)
+        generator = MoveGenerator(self.board)
+        self.possible_moves = generator.generate_legal_moves()
+        self.game_state = generator.check_game_over(self.possible_moves)
+        self.clicked_squares.clear()
+        self.promotion_flag = False
+
+        if self.game_state is None:
+            self.engine_move()
+
+    def engine_move(self):
+        engine = ChessEngine(self.board)
+        best_move = engine.find_best_move()
+
+        self.board.make_move(best_move)
         generator = MoveGenerator(self.board)
         self.possible_moves = generator.generate_legal_moves()
         self.game_state = generator.check_game_over(self.possible_moves)
